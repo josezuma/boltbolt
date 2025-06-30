@@ -57,12 +57,12 @@ The fastest way to get started is to open this project directly in Bolt.new:
 
 BoltShop includes two important files for database setup:
 
-1. **Installation Script** (`installation/install.txt`):
+1. **Installation Script** (`installation/install.sql`):
    - This file contains SQL commands to set up the database schema
    - It creates all necessary tables, relationships, and security policies
    - Run this first to establish the database structure
 
-2. **Seed Data** (`installation/seed.txt`):
+2. **Seed Data** (`installation/seed.sql`):
    - This file populates the database with sample data
    - It includes categories, brands, products, and more
    - Run this after the installation script to have a working store with sample products
