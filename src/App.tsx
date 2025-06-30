@@ -55,12 +55,12 @@ import { EditProduct } from './pages/admin/EditProduct';
 
 // Global onboarding redirect component
 function OnboardingGuard({ children }: { children: React.ReactNode }) {
-  const { user, isAdmin, setUser } = useAuthStore();
+  const { user, setUser, updateUserRole } = useAuthStore();
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const location = useLocation();
 
-  console.log('🔍 OnboardingGuard: Checking for user', user?.email, 'with role', user?.role);
+  console.log('🔍 OnboardingGuard: Checking for user', user?.email, 'with role', user?.role, 'at path', location.pathname);
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
@@ -72,7 +72,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Check if user.id is valid before making database queries
+      // Check if user.id is valid before making database queries 
       if (!user.id) {
         console.log('⚠️ User ID is undefined, allowing access with customer role');
         setOnboardingCompleted(true);
@@ -86,23 +86,23 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
         console.log('🔍 Fetching user role from database for:', user.email);
         const { data: profile, error } = await supabase
           .from('users')
-          .select('role')
+          .select('id, email, role')
           .eq('id', user.id)
           .single();
 
         if (error) {
           console.error('Error fetching user profile:', error);
-          // Keep existing role if error
+          setLoading(false);
+          return;
         } else {
           console.log('👤 User role from database:', profile.role);
           
           // Update the auth store with the correct role if it's different
           if (user.role !== profile.role) {
             console.log('🔄 Updating user role in auth store from', user.role, 'to', profile.role);
-            setUser({
-              ...user,
-              role: profile.role
-            });
+            updateUserRole(profile.role);
+            // Wait a moment for state to update
+            await new Promise(resolve => setTimeout(resolve, 50));
           }
         }
       } catch (error) {
@@ -110,7 +110,8 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
       }
 
       // If user is not admin, allow access
-      const userRole = user.role; // Use the role from auth store (now updated)
+      // Re-fetch the user from the store to get the updated role
+      const userRole = user.role;
       if (userRole !== 'admin') {
         console.log('🟢 User is not admin (role:', userRole, '), allowing access');
         setOnboardingCompleted(true);
@@ -119,7 +120,6 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
       }
 
       try {
-        console.log('🔍 Checking onboarding status for admin user:', user.email);
         console.log('🔍 Checking onboarding status for admin user:', user.email, 'with role:', userRole);
         const { data: onboardingStatus } = await supabase
           .from('settings')
@@ -160,7 +160,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   }
 
   // Get current user role from auth store (now properly synchronized)
-  const userRole = user?.role || 'customer';
+  const userRole = user?.role;
 
   // GLOBAL REDIRECT: If admin user and onboarding not completed, redirect to onboarding
   // This applies to EVERY page in the app except onboarding pages themselves
@@ -306,7 +306,7 @@ function AppContent() {
 }
 
 function App() {
-  const { user, setUser, setLoading } = useAuthStore();
+  const { user, setUser, setLoading, updateUserRole } = useAuthStore();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [isRoleVerified, setIsRoleVerified] = useState(false);
@@ -333,7 +333,7 @@ function App() {
           if (session?.user) {
             // Use auth user data directly - no database query needed
             setUser({
-              id: session.user.id,
+              id: session.user.id || '',
               email: session.user.email || '',
               role: 'customer', // Default role
               // Don't set isRoleVerified here - we need to fetch from DB
@@ -361,17 +361,25 @@ function App() {
     const fetchUserProfile = async (userId: string) => {
       try {
         console.log('🔍 Fetching user profile for:', userId);
-        const { data: profile, error } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('users')
           .select('role')
           .eq('id', userId)
           .single();
 
-        if (!error && profile && mounted) {
+        if (profileError) {
+          console.error('Error fetching user profile:', profileError);
+          if (mounted) {
+            setIsAuthReady(true);
+          }
+          return;
+        }
+
+        if (profile && mounted) {
           console.log('✅ User profile fetched, role:', profile.role);
           if (profile.role) {
             // Update user with correct role
-            setUser(prev => prev ? { ...prev, email: prev.email, role: profile.role } : null);
+            updateUserRole(profile.role);
             setIsRoleVerified(true);
           }
         }

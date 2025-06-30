@@ -95,7 +95,7 @@ export function Register() {
           setUser({
             id: profile.id,
             email: data.user.email || '',
-            role: profile.role,
+            role: profile.role || 'customer',
           });
 
           // Small delay to ensure state is updated
@@ -103,7 +103,9 @@ export function Register() {
             if (isFirstUser && profile.role === 'admin') {
               toast.success('Welcome! You\'re the first user and have been made an admin. Let\'s set up your store!');
               // Go directly to onboarding
-              navigate('/onboarding', { replace: true });
+              setTimeout(() => {
+                navigate('/onboarding', { replace: true });
+              }, 500);
             } else {
               toast.success('Account created successfully! Welcome to BoltShop!');
               navigate('/', { replace: true });

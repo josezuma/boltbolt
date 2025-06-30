@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/lib/supabase';
 import { useAuthStore } from '@/lib/store';
+import { toast } from 'sonner';
 
 interface OnboardingStep {
   id: string;
@@ -22,7 +23,7 @@ export function Welcome() {
   const [steps, setSteps] = useState<OnboardingStep[]>([]);
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
-  const { user, isAdmin } = useAuthStore();
+  const { user, isAdmin, updateUserRole } = useAuthStore();
 
   useEffect(() => {
     if (!user) {
@@ -57,10 +58,7 @@ export function Welcome() {
         if (user.role !== 'admin') {
           console.log('🔄 Welcome: Updating local user role to admin');
           // This is a workaround - ideally we'd use updateUserRole from the store
-          setUser({
-            ...user,
-            role: 'admin'
-          });
+          updateUserRole('admin');
         }
         
         // Continue with onboarding check
@@ -75,10 +73,11 @@ export function Welcome() {
     if (user.role === 'admin') {
       verifyAdminAndCheckOnboarding();
     } else {
-      console.log('⚠️ Welcome: User is not admin in local state. Redirecting to home');
+      console.log('⚠️ Welcome: User is not admin in local state:', user.role);
+      toast.error("You don't have admin access");
       navigate('/');
     }
-  }, [user, navigate]);
+  }, [user, navigate, updateUserRole]);
 
   const checkOnboardingStatus = async () => {
     try {

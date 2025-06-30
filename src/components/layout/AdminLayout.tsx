@@ -37,7 +37,7 @@ const navigation = [
 ];
 
 export function AdminLayout() {
-  const { user, setUser } = useAuthStore();
+  const { user, setUser, updateUserRole } = useAuthStore();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
@@ -81,11 +81,8 @@ export function AdminLayout() {
           console.log('✅ AdminLayout: Admin role confirmed from database');
           // Update local state if needed
           if (user.role !== 'admin') {
-            console.log('🔄 AdminLayout: Updating local role to admin');
-            setUser({
-              ...user,
-              role: 'admin'
-            });
+            console.log('🔄 AdminLayout: Updating local user role to admin');
+            updateUserRole('admin');
           }
         }
       } catch (error) {
@@ -151,12 +148,13 @@ export function AdminLayout() {
   // Check if user is admin
   if (!user) {
     console.log('⛔ AdminLayout: No user logged in, redirecting to login');
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/login" state={{ from: { pathname: '/admin/dashboard' } }} replace />;
   }
   
   if (user.role !== 'admin') {
     console.log(`⛔ AdminLayout: User ${user.email} has role ${user.role}, not admin. Redirecting to home`);
-    return <Navigate to="/" state={{ message: "You don't have admin access" }} replace />;
+    toast.error("You don't have admin access");
+    return <Navigate to="/" replace />;
   }
 
   // Redirect to onboarding if not completed
