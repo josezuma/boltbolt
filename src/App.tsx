@@ -306,7 +306,7 @@ function AppContent() {
 }
 
 function App() {
-  const { setUser, setLoading } = useAuthStore();
+  const { user, setUser, setLoading } = useAuthStore();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [isRoleVerified, setIsRoleVerified] = useState(false);
