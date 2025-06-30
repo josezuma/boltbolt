@@ -72,9 +72,9 @@ To use these files:
 1. Go to the Supabase dashboard for your project
 2. Navigate to the SQL Editor
 3. Create a new query
-4. Copy and paste the contents of `installation/install.txt`
+4. Copy and paste the contents of `installation/install.sql`
 5. Run the query
-6. Create another query with the contents of `installation/seed.txt`
+6. Create another query with the contents of `installation/seed.sql`
 7. Run the query
 
 ## 👑 Admin Access
