@@ -67,11 +67,11 @@ export function Products() {
         .select('id')
         .eq('slug', slug)
         .eq('is_active', true)
-        .maybeSingle();
+        .limit(1);
 
       if (error) throw error;
-      if (data) {
-        setSelectedCategories([data.id]);
+      if (data && data.length > 0) {
+        setSelectedCategories([data[0].id]);
       }
     } catch (error) {
       console.error('Error fetching category by slug:', error);
