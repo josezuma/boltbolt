@@ -69,13 +69,19 @@ export function Dashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      await Promise.all([
+      const results = await Promise.all([
         fetchStats(),
         fetchRecentOrders(),
         fetchLowStockProducts(),
       ]);
+      
+      // Check if any of the promises failed
+      if (results.some(result => result === false)) {
+        console.error('Some dashboard data failed to load');
+      }
     } catch (error) {
       console.error('Error fetching dashboard data:', error);
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
     }
@@ -117,7 +123,9 @@ export function Dashboard() {
       });
     } catch (error) {
       console.error('Error fetching stats:', error);
+      return false;
     }
+    return true;
   };
 
   const fetchRecentOrders = async () => {
@@ -138,7 +146,9 @@ export function Dashboard() {
       setRecentOrders(data || []);
     } catch (error) {
       console.error('Error fetching recent orders:', error);
+      return false;
     }
+    return true;
   };
 
   const fetchLowStockProducts = async () => {
@@ -154,7 +164,9 @@ export function Dashboard() {
       setLowStockProducts(data || []);
     } catch (error) {
       console.error('Error fetching low stock products:', error);
+      return false;
     }
+    return true;
   };
 
   const getStatusColor = (status: string) => {

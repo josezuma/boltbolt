@@ -71,8 +71,7 @@ export function ProductDetail() {
 
   const fetchProduct = async () => {
     try {
-      const data = await executeQuery(
-        () => supabase!
+      const { data, error } = await supabase
           .from('products')
           .select(`
             *,
@@ -97,14 +96,14 @@ export function ProductDetail() {
           `)
           .eq('slug', slug)
           .eq('is_active', true)
-          .single(),
-        'fetch product details'
-      );
+          .single();
+
+      if (error) throw error;
       
       setProduct(data);
     } catch (error) {
       console.error('Error fetching product:', error);
-      toast.error(error instanceof Error ? error.message : 'Product not found or unable to load product data');
+      toast.error('Product not found or unable to load product data');
     } finally {
       setLoading(false);
     }

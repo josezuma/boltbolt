@@ -214,37 +214,59 @@ function AppContent() {
                 <Products />
               } />
               <Route path="/product/:slug" element={
-                <ProductDetail />
+                <OnboardingGuard>
+                  <ProductDetail />
+                </OnboardingGuard>
               } />
               <Route path="/cart" element={
-                <Cart />
+                <OnboardingGuard>
+                  <Cart />
+                </OnboardingGuard>
               } />
               <Route path="/wishlist" element={
-                <Wishlist />
+                <OnboardingGuard>
+                  <Wishlist />
+                </OnboardingGuard>
               } />
               <Route path="/checkout" element={
-                <Checkout />
+                <OnboardingGuard>
+                  <Checkout />
+                </OnboardingGuard>
               } />
               <Route path="/order-confirmation/:orderId" element={
-                <OrderConfirmation />
+                <OnboardingGuard>
+                  <OrderConfirmation />
+                </OnboardingGuard>
               } />
               <Route path="/orders" element={
-                <Orders />
+                <OnboardingGuard>
+                  <Orders />
+                </OnboardingGuard>
               } />
               <Route path="/search" element={
-                <Search />
+                <OnboardingGuard>
+                  <Search />
+                </OnboardingGuard>
               } />
               <Route path="/contact" element={
-                <Contact />
+                <OnboardingGuard>
+                  <Contact />
+                </OnboardingGuard>
               } />
               <Route path="/about" element={
-                <About />
+                <OnboardingGuard>
+                  <About />
+                </OnboardingGuard>
               } />
               <Route path="/categories" element={
-                <Categories />
+                <OnboardingGuard>
+                  <Categories />
+                </OnboardingGuard>
               } />
               <Route path="/order/:orderId" element={
-                <OrderConfirmation />
+                <OnboardingGuard>
+                  <OrderConfirmation />
+                </OnboardingGuard>
               } />
               
               {/* Admin routes */}
