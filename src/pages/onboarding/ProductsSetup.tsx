@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Package, Plus, Upload, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Package, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -57,13 +57,13 @@ export function ProductsSetup() {
   const loadCategories = async () => {
     try {
       const { data, error } = await supabase
-        .from('categories')
+        ?.from('categories')
         .select('id, name, slug')
-        .eq('is_active', true)
+        .eq('is_active', true as any)
         .order('name');
 
       if (error) throw error;
-      setCategories(data || []);
+      setCategories(data as Category[] || []);
     } catch (error) {
       console.error('Error loading categories:', error);
     }
@@ -82,18 +82,18 @@ export function ProductsSetup() {
     try {
       const slug = createSlug(newCategory);
       const { data, error } = await supabase
-        .from('categories')
+        ?.from('categories')
         .insert([{
           name: newCategory.trim(),
           slug,
-          is_active: true
-        }])
+          is_active: true as any
+        } as any])
         .select()
         .single();
 
       if (error) throw error;
 
-      setCategories(prev => [...prev, data]);
+      setCategories(prev => [...prev, data as Category]);
       setNewCategory('');
       toast.success('Category added successfully');
     } catch (error) {
@@ -139,27 +139,27 @@ export function ProductsSetup() {
     try {
       const productsToInsert = validProducts.map(product => ({
         name: product.name.trim(),
-        slug: createSlug(product.name.trim()),
+        slug: createSlug(product.name.trim()) as any,
         description: product.description.trim() || null,
         price: parseFloat(product.price),
         stock: parseInt(product.stock) || 0,
         category_id: product.category_id,
         image_url: product.image_url.trim() || null,
-        is_active: true
-      }));
+        is_active: true as any
+      } as any));
 
       const { error } = await supabase
-        .from('products')
+        ?.from('products')
         .insert(productsToInsert);
 
       if (error) throw error;
 
       // Update settings
       await supabase
-        .from('settings')
+        ?.from('settings')
         .upsert([
-          { key: 'products_added', value: true },
-          { key: 'setup_step', value: 3 }
+          { key: 'products_added' as any, value: true },
+          { key: 'setup_step' as any, value: 3 }
           // DO NOT set onboarding_completed here - only in FinalSetup
         ]);
 
@@ -176,10 +176,10 @@ export function ProductsSetup() {
   const handleSkip = async () => {
     try {
       await supabase
-        .from('settings')
+        ?.from('settings')
         .upsert([
-          { key: 'products_added', value: false },
-          { key: 'setup_step', value: 3 }
+          { key: 'products_added' as any, value: false },
+          { key: 'setup_step' as any, value: 3 }
           // DO NOT set onboarding_completed here - only in FinalSetup
         ]);
       

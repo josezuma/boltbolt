@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, ArrowRight, Store, CreditCard, Package, Palette, Settings } from 'lucide-react';
+import { CheckCircle, ArrowRight, Store, CreditCard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -42,21 +42,21 @@ export function Welcome() {
     try {
       console.log('🔍 Welcome page: Checking onboarding status...');
       const { data: settings } = await supabase
-        .from('settings')
+        ?.from('settings')
         .select('key, value')
         .in('key', [
-          'onboarding_completed',
-          'store_configured',
-          'payment_configured',
-          'products_added',
-          'design_configured',
-          'setup_step'
+          'onboarding_completed' as any,
+          'store_configured' as any,
+          'payment_configured' as any,
+          'products_added' as any,
+          'design_configured' as any,
+          'setup_step' as any
         ]);
 
-      const settingsMap = settings?.reduce((acc, setting) => {
+      const settingsMap = settings?.reduce((acc: Record<string, any>, setting: any) => {
         acc[setting.key] = setting.value;
         return acc;
-      }, {} as Record<string, any>) || {};
+      }, {}) || {};
 
       console.log('📊 All onboarding settings:', settingsMap);
 
@@ -112,10 +112,10 @@ export function Welcome() {
     try {
       console.log('⏭️ Skipping onboarding, marking as completed');
       await supabase
-        .from('settings')
+        ?.from('settings')
         .upsert([
-          { key: 'onboarding_completed', value: true },
-          { key: 'setup_step', value: steps.length }
+          { key: 'onboarding_completed' as any, value: true },
+          { key: 'setup_step' as any, value: steps.length }
         ]);
       
       navigate('/', { replace: true });
@@ -129,10 +129,10 @@ export function Welcome() {
     try {
       console.log('🔄 Resetting onboarding status');
       await supabase
-        .from('settings')
+        ?.from('settings')
         .upsert([
-          { key: 'onboarding_completed', value: false },
-          { key: 'setup_step', value: 0 }
+          { key: 'onboarding_completed' as any, value: false },
+          { key: 'setup_step' as any, value: 0 }
         ]);
       
       window.location.reload();

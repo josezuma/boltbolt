@@ -94,18 +94,18 @@ export function DesignSetup() {
     setLoading(true);
     try {
       const settingsToUpdate = [
-        { key: 'store_logo', value: formData.store_logo },
-        { key: 'store_favicon', value: formData.store_favicon },
-        { key: 'store_primary_color', value: formData.store_primary_color },
-        { key: 'store_secondary_color', value: formData.store_secondary_color },
-        { key: 'store_font', value: formData.store_font },
-        { key: 'design_configured', value: true },
-        { key: 'setup_step', value: 4 }
+        { key: 'store_logo' as any, value: formData.store_logo },
+        { key: 'store_favicon' as any, value: formData.store_favicon },
+        { key: 'store_primary_color' as any, value: formData.store_primary_color },
+        { key: 'store_secondary_color' as any, value: formData.store_secondary_color },
+        { key: 'store_font' as any, value: formData.store_font },
+        { key: 'design_configured' as any, value: true },
+        { key: 'setup_step' as any, value: 4 }
         // DO NOT set onboarding_completed here - only in FinalSetup
       ];
 
       const { error } = await supabase
-        .from('settings')
+        ?.from('settings')
         .upsert(settingsToUpdate);
 
       if (error) throw error;
@@ -123,10 +123,10 @@ export function DesignSetup() {
   const handleSkip = async () => {
     try {
       await supabase
-        .from('settings')
+        ?.from('settings')
         .upsert([
-          { key: 'design_configured', value: false },
-          { key: 'setup_step', value: 4 }
+          { key: 'design_configured' as any, value: false },
+          { key: 'setup_step' as any, value: 4 }
           // DO NOT set onboarding_completed here - only in FinalSetup
         ]);
       

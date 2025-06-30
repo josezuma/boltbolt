@@ -104,7 +104,7 @@ export function PaymentSetup() {
     try {
       // Update payment processor configuration
       const { data: stripeProcessor } = await supabase
-        .from('payment_processors')
+        ?.from('payment_processors')
         .select('id')
         .eq('name', 'stripe')
         .single();
@@ -126,19 +126,19 @@ export function PaymentSetup() {
 
       // Update settings
       const settingsToUpdate = [
-        { key: 'stripe_test_mode', value: testMode },
-        { key: 'stripe_publishable_key', value: formData.stripe_publishable_key },
-        { key: 'stripe_secret_key', value: formData.stripe_secret_key },
-        { key: 'stripe_webhook_secret', value: formData.stripe_webhook_secret },
-        { key: 'paypal_enabled', value: formData.paypal_enabled },
-        { key: 'paypal_client_id', value: formData.paypal_client_id },
-        { key: 'paypal_client_secret', value: formData.paypal_client_secret },
-        { key: 'payment_configured', value: true },
-        { key: 'setup_step', value: 2 }
+        { key: 'stripe_test_mode' as any, value: testMode },
+        { key: 'stripe_publishable_key' as any, value: formData.stripe_publishable_key },
+        { key: 'stripe_secret_key' as any, value: formData.stripe_secret_key },
+        { key: 'stripe_webhook_secret' as any, value: formData.stripe_webhook_secret },
+        { key: 'paypal_enabled' as any, value: formData.paypal_enabled },
+        { key: 'paypal_client_id' as any, value: formData.paypal_client_id },
+        { key: 'paypal_client_secret' as any, value: formData.paypal_client_secret },
+        { key: 'payment_configured' as any, value: true },
+        { key: 'setup_step' as any, value: 2 }
       ];
 
       const { error } = await supabase
-        .from('settings')
+        ?.from('settings')
         .upsert(settingsToUpdate);
 
       if (error) throw error;
