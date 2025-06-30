@@ -270,7 +270,11 @@ function AppContent() {
               } />
               
               {/* Admin routes */}
-              <Route path="/admin/*" element={<AdminLayout />}>
+              <Route path="/admin/*" element={
+                <OnboardingGuard>
+                  <AdminLayout />
+                </OnboardingGuard>
+              }>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="products" element={<AdminProducts />} />
@@ -354,6 +358,7 @@ function App() {
     // Background profile fetch (non-blocking)
     const fetchUserProfileBackground = async (userId: string) => {
       try {
+        console.log('🔍 Fetching user profile in background for:', userId);
         const { data: profile, error } = await supabase
           .from('users')
           .select('role')
@@ -361,6 +366,7 @@ function App() {
           .single();
 
         if (!error && profile && mounted) {
+          console.log('✅ User profile fetched, role:', profile.role);
           // Update user with correct role
           setUser(prev => prev ? { ...prev, role: profile.role } : null);
         }

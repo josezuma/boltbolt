@@ -46,7 +46,14 @@ export function AdminLayout() {
   useEffect(() => {
     console.log('🔍 AdminLayout: Initializing...');
     const checkOnboardingStatus = async () => {
-      if (!user || user.role !== 'admin') {
+      if (!user) {
+        console.log('⚠️ AdminLayout: No user logged in');
+        setLoading(false);
+        return;
+      }
+      
+      // Check if user is admin
+      if (user.role !== 'admin') {
         console.log('⚠️ AdminLayout: Not an admin user, skipping onboarding check');
         setLoading(false);
         return;
@@ -105,7 +112,12 @@ export function AdminLayout() {
   }
 
   // Check if user is admin
-  if (!user || user.role !== 'admin') {
+  if (!user) {
+    console.log('⛔ AdminLayout: No user logged in, redirecting to login');
+    return <Navigate to="/login" replace />;
+  }
+  
+  if (!isAdmin()) {
     console.log('⛔ AdminLayout: User is not admin, redirecting to home');
     console.log('⛔ Access denied: User is not admin');
     return <Navigate to="/" replace />;
