@@ -84,7 +84,7 @@ export function Categories() {
             {categories.map((category, index) => (
               <Link
                 key={category.id}
-                to={`/products?category=${category.id}`}
+                to={`/products?category=${category.slug}`}
                 className="card-editorial-product group animate-fade-in-up"
                 style={{ animationDelay: `${index * 100}ms` }}
               >

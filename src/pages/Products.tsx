@@ -41,7 +41,14 @@ export function Products() {
     // Check for category filter in URL params
     const categoryParam = searchParams.get('category');
     if (categoryParam) {
-      setSelectedCategories([categoryParam]);
+      // Check if the parameter is a UUID or a slug
+      if (categoryParam.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)) {
+        // It's a UUID, use it directly
+        setSelectedCategories([categoryParam]);
+      } else {
+        // It's likely a slug, we need to fetch the category ID first
+        fetchCategoryBySlug(categoryParam);
+      }
     }
     
     fetchCategories();
@@ -52,6 +59,25 @@ export function Products() {
     }
     fetchProducts();
   }, [searchParams, selectedCategories, selectedBrands, sortBy, inStockOnly]);
+
+  const fetchCategoryBySlug = async (slug: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('slug', slug)
+        .eq('is_active', true)
+        .single();
+
+      if (error) throw error;
+      if (data) {
+        setSelectedCategories([data.id]);
+      }
+    } catch (error) {
+      console.error('Error fetching category by slug:', error);
+      toast.error('Failed to load category');
+    }
+  };
 
   const fetchCategories = async () => {
     try {
