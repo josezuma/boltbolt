@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Store, MapPin } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Store, Upload, Globe, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -45,24 +45,24 @@ export function StoreSetup() {
   const loadExistingSettings = async () => {
     try {
       const { data: settings } = await supabase
-        ?.from('settings')
+        .from('settings')
         .select('key, value')
         .in('key', [
-          'store_name' as any,
-          'store_description' as any, 
-          'store_email' as any,
-          'store_phone' as any,
-          'store_address' as any,
-          'store_timezone' as any,
-          'store_language' as any,
-          'currency' as any
+          'store_name',
+          'store_description', 
+          'store_email',
+          'store_phone',
+          'store_address',
+          'store_timezone',
+          'store_language',
+          'currency'
         ]);
 
       if (settings) {
-        const settingsMap = settings.reduce((acc: Record<string, any>, setting: any) => {
+        const settingsMap = settings.reduce((acc, setting) => {
           acc[setting.key] = setting.value;
           return acc;
-        }, {});
+        }, {} as Record<string, any>);
 
         setFormData(prev => ({
           ...prev,
@@ -108,21 +108,21 @@ export function StoreSetup() {
     setLoading(true);
     try {
       const settingsToUpdate = [
-        { key: 'store_name' as any, value: formData.store_name },
-        { key: 'store_description' as any, value: formData.store_description },
-        { key: 'store_email' as any, value: formData.store_email },
-        { key: 'store_phone' as any, value: formData.store_phone },
-        { key: 'store_address' as any, value: formData.store_address },
-        { key: 'store_timezone' as any, value: formData.store_timezone },
-        { key: 'store_language' as any, value: formData.store_language },
-        { key: 'currency' as any, value: formData.currency },
-        { key: 'store_configured' as any, value: true },
-        { key: 'setup_step' as any, value: 1 }
+        { key: 'store_name', value: formData.store_name },
+        { key: 'store_description', value: formData.store_description },
+        { key: 'store_email', value: formData.store_email },
+        { key: 'store_phone', value: formData.store_phone },
+        { key: 'store_address', value: formData.store_address },
+        { key: 'store_timezone', value: formData.store_timezone },
+        { key: 'store_language', value: formData.store_language },
+        { key: 'currency', value: formData.currency },
+        { key: 'store_configured', value: true },
+        { key: 'setup_step', value: 1 }
         // DO NOT set onboarding_completed here - only in FinalSetup
       ];
 
       const { error } = await supabase
-        ?.from('settings')
+        .from('settings')
         .upsert(settingsToUpdate);
 
       if (error) throw error;

@@ -99,10 +99,10 @@ export function FinalSetup() {
     try {
       console.log('🚀 Completing onboarding and launching store...');
       await supabase
-        ?.from('settings')
+        .from('settings')
         .upsert([
-          { key: 'onboarding_completed' as any, value: true },
-          { key: 'setup_step' as any, value: totalSteps }
+          { key: 'onboarding_completed', value: true },
+          { key: 'setup_step', value: totalSteps }
         ]);
 
       console.log('✅ Onboarding completed successfully!');
