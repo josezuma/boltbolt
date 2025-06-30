@@ -22,6 +22,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { StripeWebhookHelper } from '@/components/ui/stripe-webhook-helper';
 import { supabase } from '@/lib/supabase';
+import { executeQuery } from '@/lib/supabase';
 import { useAuthStore } from '@/lib/store';
 import { toast } from 'sonner';
 
@@ -186,11 +187,14 @@ export function EditPaymentProcessor() {
           { key: 'stripe_webhook_secret', value: formData.configuration.webhook_secret || '' }
         ];
 
-        const { error: settingsError } = await supabase
-          .from('settings')
-          .upsert(settingsToUpdate);
-
-        if (settingsError) {
+        try {
+          await executeQuery(
+            () => supabase
+              .from('settings')
+              .upsert(settingsToUpdate),
+            'update settings'
+          );
+        } catch (settingsError) {
           console.error('Error updating settings:', settingsError);
           // Continue anyway as the processor was updated
         }

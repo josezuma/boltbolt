@@ -30,6 +30,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { supabase } from '@/lib/supabase';
+import { executeQuery } from '@/lib/supabase';
 import { useAuthStore } from '@/lib/store';
 import { toast } from 'sonner';
 import type { Database } from '@/lib/database.types';
@@ -57,21 +58,23 @@ export function Customers() {
 
   const fetchCustomers = async () => {
     try {
-      const { data, error } = await supabase
-        .from('users')
-        .select(`
-          *,
-          orders (
-            id,
-            total_amount,
-            status,
-            created_at
-          )
-        `)
-        .eq('role', 'customer')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await executeQuery(
+        () => supabase
+          .from('users')
+          .select(`
+            *,
+            orders (
+              id,
+              total_amount,
+              status,
+              created_at
+            )
+          `)
+          .eq('role', 'customer')
+          .order('created_at', { ascending: false }),
+        'fetch customers'
+      );
+      
       setCustomers(data || []);
     } catch (error) {
       console.error('Error fetching customers:', error);

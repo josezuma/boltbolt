@@ -36,6 +36,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
+import { executeQuery } from '@/lib/supabase';
 import { useAuthStore } from '@/lib/store';
 import { toast } from 'sonner';
 import type { Database } from '@/lib/database.types';
@@ -64,20 +65,22 @@ export function Orders() {
 
   const fetchOrders = async () => {
     try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select(`
-          *,
-          order_items (
-            quantity,
-            price,
-            products (name)
-          ),
-          users (email)
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
+      const data = await executeQuery(
+        () => supabase
+          .from('orders')
+          .select(`
+            *,
+            order_items (
+              quantity,
+              price,
+              products (name)
+            ),
+            users (email)
+          `)
+          .order('created_at', { ascending: false }),
+        'fetch orders'
+      );
+      
       setOrders(data || []);
     } catch (error) {
       console.error('Error fetching orders:', error);
