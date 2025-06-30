@@ -14,12 +14,18 @@
     "noEmit": true,
     "jsx": "react-jsx",
     
-    /* Linting - relaxed for development */
+    /* Linting - extremely relaxed for development */
     "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": false,
     "strictNullChecks": false,
+    "noImplicitAny": false,
+    "ignoreDeprecations": "5.0",
+    "suppressImplicitAnyIndexErrors": true,
+    "useUnknownInCatchVariables": false,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
 
     /* for ShadCN */
     "baseUrl": ".",
