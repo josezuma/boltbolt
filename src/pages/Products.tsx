@@ -67,7 +67,7 @@ export function Products() {
         .select('id')
         .eq('slug', slug)
         .eq('is_active', true)
-        .maybeSingle();
+        .single();
 
       if (error) throw error;
       if (data) {
@@ -75,7 +75,8 @@ export function Products() {
       }
     } catch (error) {
       console.error('Error fetching category by slug:', error);
-      toast.error('Failed to load category');
+      // Don't show error toast for category not found
+      // Just continue with no category filter
     }
   };
 
@@ -147,7 +148,7 @@ export function Products() {
           // Apply search filter
           const searchTerm = searchParams.get('q') || searchQuery;
           if (searchTerm) {
-            query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%`);
+            query = query.or(`name.ilike.%${searchTerm}%,description.ilike.%${searchTerm}%,tags.cs.{${searchTerm}}`);
           }
 
           // Apply category filter
