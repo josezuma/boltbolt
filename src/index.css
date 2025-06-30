@@ -1,0 +1,496 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Editorial Color Palette */
+  --background: #F9F9F9;
+  --foreground: #111111;
+  --card: #FFFFFF;
+  --card-foreground: #111111;
+  --popover: #FFFFFF;
+  --popover-foreground: #111111;
+  
+  /* Primary/Accent Colors */
+  --primary: #2A2A2A;
+  --primary-foreground: #F9F9F9;
+  --primary-hover: #111111;
+  
+  /* Secondary Colors */
+  --secondary: #EAEAEA;
+  --secondary-foreground: #111111;
+  --secondary-hover: #DCDCDC;
+  
+  /* Muted Colors */
+  --muted: #EAEAEA;
+  --muted-foreground: #666666;
+  
+  /* Accent Colors */
+  --accent: #EAEAEA;
+  --accent-foreground: #111111;
+  --accent-hover: #DCDCDC;
+  
+  /* Sale/Special Colors */
+  --destructive: #AD2B2F;
+  --destructive-foreground: #F9F9F9;
+  --destructive-hover: #8B2226;
+  
+  /* Success Colors */
+  --success: #2A5A2A;
+  --success-foreground: #F9F9F9;
+  --success-hover: #1F4A1F;
+  
+  /* Warning Colors */
+  --warning: #8B6914;
+  --warning-foreground: #F9F9F9;
+  --warning-hover: #6B5010;
+  
+  /* Border and Input */
+  --border: #DCDCDC;
+  --input: #DCDCDC;
+  --ring: #2A2A2A;
+  
+  --radius: 0rem;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  html {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+  
+  h1, h2, h3, h4, h5, h6, .heading {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+  
+  .product-title {
+    font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Global Layout */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+  text-align: left;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* Editorial Container System */
+.container-editorial {
+  width: 100%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+@media (max-width: 768px) {
+  .container-editorial {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .container-editorial {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Editorial Typography System */
+@layer components {
+  .text-editorial-hero {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.5rem, 8vw, 6rem);
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+  }
+  
+  .text-editorial-heading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+  }
+  
+  .text-editorial-subheading {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-editorial-body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+  
+  .text-editorial-caption {
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 0.875rem;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  
+  .text-editorial-price {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Editorial Button System */
+@layer components {
+  .btn-editorial-primary {
+    @apply bg-primary text-primary-foreground;
+    @apply px-8 py-4 text-sm font-medium tracking-wide uppercase;
+    @apply transition-all duration-300 ease-out;
+    @apply hover:bg-primary-hover;
+    @apply border-0 rounded-none;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .btn-editorial-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s ease;
+  }
+  
+  .btn-editorial-primary:hover::before {
+    left: 100%;
+  }
+  
+  .btn-editorial-secondary {
+    @apply bg-transparent text-foreground border border-border;
+    @apply px-8 py-4 text-sm font-medium tracking-wide uppercase;
+    @apply transition-all duration-300 ease-out;
+    @apply hover:bg-foreground hover:text-background;
+    @apply rounded-none;
+  }
+  
+  .btn-editorial-minimal {
+    @apply bg-transparent text-foreground;
+    @apply px-0 py-2 text-sm font-medium tracking-wide uppercase;
+    @apply transition-all duration-300 ease-out;
+    @apply hover:opacity-60;
+    @apply border-0 rounded-none;
+    @apply border-b border-transparent hover:border-foreground;
+  }
+}
+
+/* Editorial Card System */
+@layer components {
+  .card-editorial {
+    @apply bg-card border-0 rounded-none shadow-none;
+    @apply transition-all duration-500 ease-out;
+  }
+  
+  .card-editorial-hover {
+    @apply card-editorial;
+    @apply hover:shadow-lg;
+    @apply transform hover:-translate-y-1;
+  }
+  
+  .card-editorial-product {
+    @apply card-editorial-hover;
+    @apply cursor-pointer;
+  }
+}
+
+/* Editorial Image Effects */
+@layer components {
+  .image-editorial-hover {
+    @apply transition-transform duration-700 ease-out;
+    @apply group-hover:scale-105;
+  }
+  
+  .image-editorial-zoom {
+    @apply transition-transform duration-500 ease-out;
+    @apply hover:scale-105;
+  }
+}
+
+/* Editorial Layout Components */
+@layer components {
+  .section-editorial {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+  
+  .section-editorial-compact {
+    @apply py-12 md:py-16 lg:py-20;
+  }
+  
+  .grid-editorial-products {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12;
+  }
+  
+  .grid-editorial-categories {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8;
+  }
+}
+
+/* Editorial Navigation */
+@layer components {
+  .nav-editorial {
+    @apply bg-background/95 backdrop-blur-sm border-b border-border;
+    @apply sticky top-0 z-50;
+  }
+  
+  .nav-editorial-link {
+    @apply text-muted-foreground hover:text-foreground;
+    @apply text-sm font-medium tracking-wide uppercase;
+    @apply transition-colors duration-300;
+  }
+}
+
+/* Editorial Promo Banner */
+@layer components {
+  .promo-editorial {
+    @apply bg-foreground text-background;
+    @apply py-3 text-center;
+    @apply text-sm font-medium tracking-wide uppercase;
+  }
+}
+
+/* Editorial Hero Section */
+@layer components {
+  .hero-editorial {
+    @apply min-h-screen flex items-center justify-center;
+    @apply bg-gradient-to-b from-background to-muted;
+    @apply relative overflow-hidden;
+  }
+  
+  .hero-editorial-content {
+    @apply text-center max-w-4xl mx-auto px-4;
+  }
+}
+
+/* Editorial Product Grid */
+@layer components {
+  .product-grid-editorial {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12;
+  }
+  
+  .product-card-editorial {
+    @apply cursor-pointer;
+  }
+  
+  .product-image-editorial {
+    @apply aspect-[3/4] overflow-hidden bg-muted mb-4;
+  }
+  
+  .product-info-editorial {
+    @apply space-y-2;
+  }
+  
+  .product-title-editorial {
+    @apply product-title text-base font-medium;
+    @apply group-hover:opacity-60 transition-opacity duration-300;
+  }
+  
+  .product-price-editorial {
+    @apply text-editorial-price text-sm;
+  }
+}
+
+/* Editorial Footer */
+@layer components {
+  .footer-editorial {
+    @apply bg-foreground text-background;
+    @apply py-16 md:py-20;
+  }
+  
+  .footer-editorial-content {
+    @apply grid grid-cols-1 md:grid-cols-4 gap-8 lg:gap-12;
+  }
+  
+  .footer-editorial-section {
+    @apply space-y-4;
+  }
+  
+  .footer-editorial-title {
+    @apply text-sm font-medium tracking-wide uppercase;
+  }
+  
+  .footer-editorial-link {
+    @apply text-background/70 hover:text-background;
+    @apply text-sm transition-colors duration-300;
+  }
+}
+
+/* Editorial Animations */
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.6s ease-out;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out;
+}
+
+.animation-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animation-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animation-delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* Editorial Microinteractions */
+.hover-lift {
+  @apply transition-transform duration-300 ease-out;
+  @apply hover:-translate-y-1;
+}
+
+.hover-fade {
+  @apply transition-opacity duration-300 ease-out;
+  @apply hover:opacity-60;
+}
+
+.hover-scale {
+  @apply transition-transform duration-300 ease-out;
+  @apply hover:scale-105;
+}
+
+/* Editorial Spacing System */
+.space-editorial-xs { @apply space-y-4; }
+.space-editorial-sm { @apply space-y-6; }
+.space-editorial-md { @apply space-y-8; }
+.space-editorial-lg { @apply space-y-12; }
+.space-editorial-xl { @apply space-y-16; }
+
+/* Editorial Text Utilities */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+/* Accessibility & Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  :root {
+    --foreground: #000000;
+    --background: #FFFFFF;
+    --border: #000000;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .nav-editorial,
+  .footer-editorial,
+  .btn-editorial-primary,
+  .btn-editorial-secondary {
+    display: none !important;
+  }
+}
