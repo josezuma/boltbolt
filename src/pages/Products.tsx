@@ -67,7 +67,7 @@ export function Products() {
         .select('id')
         .eq('slug', slug)
         .eq('is_active', true)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       if (data) {
