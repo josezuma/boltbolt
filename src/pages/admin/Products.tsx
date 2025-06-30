@@ -156,16 +156,27 @@ export function Products() {
         .from('products')
         .select(`
           *,
-          categories:category_id (name),
-          brands:brand_id (name),
+          categories:category_id (name, slug),
+          brands:brand_id (name, slug),
           product_variants (id, name, price, stock)
         `);
-      
+
       // Apply filters
       query = applyFiltersToQuery(query);
       
       // Apply sorting
-      query = query.order(sortField, { ascending: sortDirection === 'asc' });
+      switch (sortField) {
+        case 'price_low':
+          query = query.order('price', { ascending: true });
+          break;
+        case 'price_high':
+          query = query.order('price', { ascending: false });
+          break;
+        case 'name':
+        default:
+          query = query.order('name', { ascending: true });
+          break;
+      }
       
       // Apply pagination
       const from = (currentPage - 1) * productsPerPage;
