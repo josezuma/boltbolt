@@ -1,6 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './database.types';
 
+// Make TypeScript happy by ensuring supabase is never null
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
@@ -30,7 +34,7 @@ const handleNetworkError = (error: any, operation: string) => {
 };
 
 // Create Supabase client with enhanced configuration
-export const supabase = supabaseUrl && supabaseAnonKey ? createClient<Database>(supabaseUrl, supabaseAnonKey, {
+export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: {
     autoRefreshToken: true,
     persistSession: true,
@@ -61,14 +65,10 @@ export const supabase = supabaseUrl && supabaseAnonKey ? createClient<Database>(
       eventsPerSecond: 10,
     },
   },
-}) : null;
+});
 
 // Enhanced test connection function with retry logic
 export const testSupabaseConnection = async () => {
-  if (!supabase) {
-    throw new Error('Supabase client not initialized');
-  }
-  
   const maxRetries = 3;
   let lastError;
   
@@ -105,10 +105,6 @@ export const executeQuery = async <T>(
   queryFn: () => Promise<{ data: T | null; error: any }>,
   operation: string
 ): Promise<T> => {
-  if (!supabase) {
-    throw new Error('Supabase client not initialized. Please check your environment configuration.');
-  }
-
   try {
     const { data, error } = await queryFn();
     if (error) throw error;
