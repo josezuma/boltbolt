@@ -191,7 +191,7 @@ export function Header() {
                 >
                   Products
                 </Link>
-                <Link to="/products?category=clothing" className="nav-editorial-link">
+                <Link to="/products?category=clothing" className="nav-editorial-link"></Link>
                 <Link
                   to="/categories"
                   className="block nav-editorial-link py-2"
