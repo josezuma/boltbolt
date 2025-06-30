@@ -188,7 +188,7 @@ export function Header() {
                   to="/products"
                   className="block nav-editorial-link py-2"
                   onClick={() => setIsMenuOpen(false)}
-                >
+                  >
                   Products
                 </Link>
                 <Link to="/products?category=clothing" className="nav-editorial-link"></Link>
