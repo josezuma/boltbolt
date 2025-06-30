@@ -52,7 +52,6 @@ import { EditPaymentProcessor } from './pages/admin/EditPaymentProcessor';
 import { Settings } from './pages/admin/Settings';
 import { AddProduct } from './pages/admin/AddProduct';
 import { EditProduct } from './pages/admin/EditProduct';
-import { DesignSetup } from './pages/onboarding/DesignSetup';
 
 // Global onboarding redirect component
 function OnboardingGuard({ children }: { children: React.ReactNode }) {
