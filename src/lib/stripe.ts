@@ -57,10 +57,6 @@ export const createPaymentIntent = async (
   try {
     const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create-payment`;
     console.log('🔄 Creating payment intent at URL:', apiUrl);
-    
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
-    }
 
     const { data: authData, error: authError } = await supabase.auth.getSession();
     if (authError) {
@@ -166,10 +162,6 @@ export const processPayment = async (
     }
     
     console.log('🔄 Preparing to call process-payment edge function...');
-    
-    if (!supabase) {
-      throw new Error('Supabase client not initialized');
-    }
 
     const response = await fetch(apiUrl, { 
       method: 'POST',

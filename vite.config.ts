@@ -6,14 +6,6 @@ export default defineConfig({
   plugins: [react()],
   build: {
     rollupOptions: {
-      onwarn(warning, warn) {
-        // Ignore certain warnings
-        if (warning.code === 'UNUSED_EXTERNAL_IMPORT') return;
-        if (warning.code === 'MODULE_LEVEL_DIRECTIVE') return;
-        
-        // Use default for everything else
-        warn(warning);
-      },
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
@@ -33,9 +25,5 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['lucide-react'],
-  },
-  // Disable type checking during build for faster builds
-  esbuild: {
-    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   },
 });

@@ -40,7 +40,6 @@ export function ShippingForm({
 
   const loadUserAddress = async () => {
     if (!userId) return;
-    if (!supabase) return;
     
     setLoading(true);
     try {

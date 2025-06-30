@@ -82,7 +82,7 @@ export function Products() {
   const fetchCategories = async () => {
     try {
       const data = await executeQuery(
-        () => supabase
+        () => supabase!
           .from('categories')
           .select('*')
           .eq('is_active', true)
@@ -100,7 +100,7 @@ export function Products() {
   const fetchBrands = async () => {
     try {
       const data = await executeQuery(
-        () => supabase
+        () => supabase!
           .from('brands')
           .select('*')
           .eq('is_active', true)
@@ -135,7 +135,7 @@ export function Products() {
     try {
       const data = await executeQuery(
         () => {
-          let query = supabase
+          let query = supabase!
             .from('products')
             .select(`
               *,

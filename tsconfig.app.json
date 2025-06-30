@@ -13,18 +13,12 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
-    
-    /* Linting - extremely relaxed for development */
-    "strict": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": false,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
-    "ignoreDeprecations": "5.0",
-    "useUnknownInCatchVariables": false,
-    "allowUnreachableCode": true,
-    "allowUnusedLabels": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
 
     /* for ShadCN */
     "baseUrl": ".",

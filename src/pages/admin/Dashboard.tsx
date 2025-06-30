@@ -20,7 +20,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/lib/supabase';
-import { executeQuery } from '@/lib/supabase';
 import { useAuthStore } from '@/lib/store';
 import type { Database } from '@/lib/database.types';
 
@@ -144,17 +143,14 @@ export function Dashboard() {
 
   const fetchLowStockProducts = async () => {
     try {
-      const data = await executeQuery(
-        () => supabase
-          .from('products')
-          .select('*')
-          .eq('is_active', true)
-          .lte('stock', 10)
-          .order('stock', { ascending: true })
-          .limit(5),
-        'fetch low stock products'
-      );
-      
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .lte('stock', 10)
+        .order('stock', { ascending: true })
+        .limit(5);
+
       setLowStockProducts(data || []);
     } catch (error) {
       console.error('Error fetching low stock products:', error);

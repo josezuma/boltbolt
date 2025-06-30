@@ -29,7 +29,6 @@ import {
 } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { supabase } from '@/lib/supabase';
-import { executeQuery } from '@/lib/supabase';
 import { useAuthStore } from '@/lib/store';
 import { toast } from 'sonner';
 import type { Database } from '@/lib/database.types';
@@ -222,15 +221,13 @@ export function EditProduct() {
 
   const fetchBrands = async () => {
     try {
-      const data = await executeQuery(
-        () => supabase
-          .from('brands')
-          .select('*')
-          .eq('is_active', true)
-          .order('name'),
-        'fetch brands'
-      );
-      
+      const { data, error } = await supabase
+        .from('brands')
+        .select('*')
+        .eq('is_active', true)
+        .order('name');
+
+      if (error) throw error;
       setBrands(data || []);
     } catch (error) {
       console.error('Error fetching brands:', error);
@@ -473,12 +470,11 @@ export function EditProduct() {
           is_featured: image.is_featured
         }));
         
-        await executeQuery(
-          () => supabase
-            .from('product_images')
-            .insert(imagesToInsert),
-          'add new images'
-        );
+        const { error: addImagesError } = await supabase
+          .from('product_images')
+          .insert(imagesToInsert);
+          
+        if (addImagesError) throw addImagesError;
       }
       
       // 3. Handle product variants
@@ -539,13 +535,12 @@ export function EditProduct() {
         }
       } else {
         // If variants are disabled, delete any existing variants
-        await executeQuery(
-          () => supabase
-            .from('product_variants')
-            .delete()
-            .eq('product_id', productId),
-          'delete all variants'
-        );
+        const { error: deleteAllVariantsError } = await supabase
+          .from('product_variants')
+          .delete()
+          .eq('product_id', productId);
+          
+        if (deleteAllVariantsError) throw deleteAllVariantsError;
       }
       
       // 4. Update the main product image if we have a featured image
