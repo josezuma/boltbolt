@@ -80,6 +80,7 @@ interface User {
 interface AuthStore {
   user: User | null;
   setUser: (user: User | null) => void;
+  updateUserRole: (role: 'admin' | 'customer') => void;
   isAdmin: () => boolean;
   isLoading: boolean;
   setLoading: (loading: boolean) => void;
@@ -91,6 +92,9 @@ export const useAuthStore = create<AuthStore>()(
       user: null,
       isLoading: true,
       setUser: (user) => set({ user, isLoading: false }),
+      updateUserRole: (role) => set(state => ({
+        user: state.user ? { ...state.user, role } : null
+      })),
       setLoading: (loading) => set({ isLoading: loading }),
       isAdmin: () => get().user?.role === 'admin',
     }),

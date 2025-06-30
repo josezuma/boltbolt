@@ -42,21 +42,51 @@ export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isCheckingRole, setIsCheckingRole] = useState(false);
 
   useEffect(() => {
     console.log('🔍 AdminLayout: Initializing...');
     const checkOnboardingStatus = async () => {
       if (!user) {
         console.log('⚠️ AdminLayout: No user logged in');
-        setLoading(false);
+        setLoading(false); 
         return;
       }
       
-      // Check if user is admin
-      if (user.role !== 'admin') {
-        console.log('⚠️ AdminLayout: Not an admin user, skipping onboarding check');
+      // Double-check user role from database to be sure
+      setIsCheckingRole(true);
+      try {
+        const { data: profile, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+          
+        if (error) {
+          console.error('Error fetching user role:', error);
+          setLoading(false);
+          setIsCheckingRole(false);
+          return;
+        }
+        
+        // If not admin, don't proceed with onboarding check
+        if (profile.role !== 'admin') {
+          console.log('⚠️ AdminLayout: Not an admin user (confirmed from DB), skipping onboarding check');
+          setLoading(false);
+          setIsCheckingRole(false);
+          return;
+        }
+      } catch (error) {
+        console.error('Error checking user role:', error);
         setLoading(false);
+        setIsCheckingRole(false);
         return;
+      }
+      setIsCheckingRole(false);
+      
+      // If we get here, user is confirmed admin
+      if (user.role !== 'admin') {
+        console.log('⚠️ Role mismatch detected, updating local state');
       }
 
       try {
@@ -87,6 +117,18 @@ export function AdminLayout() {
     checkOnboardingStatus();
   }, [user]);
 
+  // Show loading state while checking role or onboarding status
+  if (loading || isCheckingRole) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+          <p className="text-gray-600 text-sm">Loading admin panel...</p>
+        </div>
+      </div>
+    );
+  }
+
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
@@ -98,19 +140,6 @@ export function AdminLayout() {
     }
   };
 
-  // Show loading state while checking onboarding status
-  if (loading) {
-    console.log('⏳ AdminLayout: Loading...');
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-          <p className="text-gray-600 text-sm">Loading admin panel...</p>
-        </div>
-      </div>
-    );
-  }
-
   // Check if user is admin
   if (!user) {
     console.log('⛔ AdminLayout: No user logged in, redirecting to login');
@@ -118,15 +147,13 @@ export function AdminLayout() {
   }
   
   if (user.role !== 'admin') {
-    console.log('⛔ AdminLayout: User is not admin, redirecting to home');
-    console.log('⛔ Access denied: User is not admin');
+    console.log(`⛔ AdminLayout: User ${user.email} has role ${user.role}, not admin. Redirecting to home`);
     return <Navigate to="/" replace />;
   }
 
   // Redirect to onboarding if not completed
   if (onboardingCompleted === false) {
-    console.log('🚀 AdminLayout: Onboarding not completed, redirecting to onboarding');
-    console.log('🚀 Redirecting to onboarding from admin layout');
+    console.log('🚀 AdminLayout: Onboarding not completed, redirecting to onboarding flow');
     return <Navigate to="/onboarding" replace />;
   }
   

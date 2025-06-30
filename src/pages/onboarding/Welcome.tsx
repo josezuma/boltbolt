@@ -30,12 +30,51 @@ export function Welcome() {
       return;
     }
     
-    if (!isAdmin()) {
-      navigate('/');
-      return;
-    }
+    // Double-check user role from database
+    const verifyAdminRole = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+          
+        if (error) {
+          console.error('Error verifying admin role:', error);
+          navigate('/');
+          return;
+        }
+        
+        if (data.role !== 'admin') {
+          console.log('User is not an admin, redirecting to home');
+          navigate('/');
+          return;
+        }
+        
+        // Update local state if needed
+        if (user.role !== 'admin') {
+          console.log('Updating local user role to admin');
+          // This is a workaround - ideally we'd use updateUserRole from the store
+          setUser({
+            ...user,
+            role: 'admin'
+          });
+        }
+        
+        // Continue with onboarding check
+        checkOnboardingStatus();
+      } catch (error) {
+        console.error('Error in admin verification:', error);
+        navigate('/');
+      }
+    };
     
-    checkOnboardingStatus();
+    // If user claims to be admin, verify it; otherwise redirect
+    if (user.role === 'admin') {
+      verifyAdminRole();
+    } else {
+      navigate('/');
+    }
   }, [user, isAdmin, navigate]);
 
   const checkOnboardingStatus = async () => {

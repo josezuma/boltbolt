@@ -308,6 +308,7 @@ function AppContent() {
 function App() {
   const { setUser, setLoading } = useAuthStore();
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -332,14 +333,15 @@ function App() {
             // Use auth user data directly - no database query needed
             setUser({
               id: session.user.id,
-              email: session.user.email || '',
-              role: 'customer', // Default role, will be updated by background fetch
+              role: 'customer', // Default role
+              role: 'customer', // Default role, will be updated by fetch
             });
-
-            // Fetch detailed profile in background (non-blocking)
-            fetchUserProfileBackground(session.user.id);
+            fetchUserProfile(session.user.id);
+            fetchUserProfile(session.user.id);
+            fetchUserProfile(session.user.id);
           } else {
             setUser(null);
+            setIsAuthReady(true);
           }
           
           setLoading(false);
@@ -355,8 +357,8 @@ function App() {
       }
     };
 
-    // Background profile fetch (non-blocking)
-    const fetchUserProfileBackground = async (userId: string) => {
+    // Profile fetch
+    const fetchUserProfile = async (userId: string) => {
       try {
         console.log('🔍 Fetching user profile in background for:', userId);
         const { data: profile, error } = await supabase
@@ -368,8 +370,10 @@ function App() {
         if (!error && profile && mounted) {
           console.log('✅ User profile fetched, role:', profile.role);
           // Update user with correct role
-          setUser(prev => prev ? { ...prev, role: profile.role } : null);
+          setUser(prev => prev ? { ...prev, role: profile.role } : null); 
         }
+        // Mark auth as ready regardless of result
+        setIsAuthReady(true);
       } catch (error) {
         // Silently fail - user can still use the app with default role
         console.warn('Background profile fetch failed:', error);
@@ -427,7 +431,7 @@ function App() {
   }, [setUser, setLoading, isInitialized]);
 
   // Show minimal loading only for initial auth check
-  if (!isInitialized) {
+  if (!isInitialized || !isAuthReady) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
