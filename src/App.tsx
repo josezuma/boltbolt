@@ -334,10 +334,7 @@ function App() {
             setUser({
               id: session.user.id,
               role: 'customer', // Default role
-              role: 'customer', // Default role, will be updated by fetch
             });
-            fetchUserProfile(session.user.id);
-            fetchUserProfile(session.user.id);
             fetchUserProfile(session.user.id);
           } else {
             setUser(null);
@@ -397,7 +394,7 @@ function App() {
                 role: 'customer',
               });
               // Fetch detailed profile in background
-              fetchUserProfileBackground(session.user.id);
+              fetchUserProfile(session.user.id);
             }
             break;
 
@@ -412,7 +409,7 @@ function App() {
                 email: session.user.email || '',
                 role: 'customer',
               });
-              fetchUserProfileBackground(session.user.id);
+              fetchUserProfile(session.user.id);
             }
             break;
         }
