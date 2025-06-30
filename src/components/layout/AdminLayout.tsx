@@ -47,8 +47,9 @@ export function AdminLayout() {
   useEffect(() => {
     console.log('🔍 AdminLayout: Initializing...');
     const checkOnboardingStatus = async () => {
-      if (!user) {
-        console.log('⚠️ AdminLayout: No user logged in');
+      // First, ensure we have a user and they claim to be an admin
+      if (!user || user.role !== 'admin') {
+        console.log('⚠️ AdminLayout: No user or not admin in local state:', user?.email, user?.role);
         setLoading(false); 
         return;
       }
@@ -56,6 +57,7 @@ export function AdminLayout() {
       // Double-check user role from database to be sure
       setIsCheckingRole(true);
       try {
+        console.log('🔍 AdminLayout: Verifying admin role for user:', user.email);
         const { data: profile, error } = await supabase
           .from('users')
           .select('role')
@@ -71,10 +73,20 @@ export function AdminLayout() {
         
         // If not admin, don't proceed with onboarding check
         if (profile.role !== 'admin') {
-          console.log('⚠️ AdminLayout: Not an admin user (confirmed from DB), skipping onboarding check');
+          console.log('⚠️ AdminLayout: User is not admin in database. DB role:', profile.role);
           setLoading(false);
           setIsCheckingRole(false);
           return;
+        } else {
+          console.log('✅ AdminLayout: Admin role confirmed from database');
+          // Update local state if needed
+          if (user.role !== 'admin') {
+            console.log('🔄 AdminLayout: Updating local role to admin');
+            setUser({
+              ...user,
+              role: 'admin'
+            });
+          }
         }
       } catch (error) {
         console.error('Error checking user role:', error);
@@ -85,10 +97,6 @@ export function AdminLayout() {
       setIsCheckingRole(false);
       
       // If we get here, user is confirmed admin
-      if (user.role !== 'admin') {
-        console.log('⚠️ Role mismatch detected, updating local state');
-      }
-
       try {
         console.log('🔍 AdminLayout: Checking onboarding status...');
         const { data: onboardingStatus, error } = await supabase
@@ -143,12 +151,12 @@ export function AdminLayout() {
   // Check if user is admin
   if (!user) {
     console.log('⛔ AdminLayout: No user logged in, redirecting to login');
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
   
   if (user.role !== 'admin') {
     console.log(`⛔ AdminLayout: User ${user.email} has role ${user.role}, not admin. Redirecting to home`);
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" state={{ message: "You don't have admin access" }} replace />;
   }
 
   // Redirect to onboarding if not completed

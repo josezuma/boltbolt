@@ -74,7 +74,7 @@ export const useCartStore = create<CartStore>()(
 interface User {
   id: string;
   email: string;
-  role: 'admin' | 'customer';
+  role: 'admin' | 'customer'; 
 }
 
 interface AuthStore {
@@ -93,7 +93,8 @@ export const useAuthStore = create<AuthStore>()(
       isLoading: true,
       setUser: (user) => set({ user, isLoading: false }),
       updateUserRole: (role) => set(state => ({
-        user: state.user ? { ...state.user, role } : null
+        user: state.user ? { ...state.user, role } : null,
+        isLoading: false
       })),
       setLoading: (loading) => set({ isLoading: loading }),
       isAdmin: () => get().user?.role === 'admin',

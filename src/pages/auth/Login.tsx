@@ -47,7 +47,7 @@ export function Login() {
         if (profileError) throw profileError;
 
         setUser({
-          id: profile.id,
+          id: data.user.id,
           email: profile.email,
           role: profile.role,
         });
@@ -55,7 +55,7 @@ export function Login() {
         // For admin users, let the ProtectedRoute handle onboarding redirect
         // For regular users, navigate to intended destination
         if (profile.role === 'admin') {
-          toast.success('Welcome back!');
+          toast.success('Welcome back, Admin!');
           navigate(from, { replace: true });
         } else {
           toast.success('Welcome back!');

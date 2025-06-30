@@ -309,6 +309,7 @@ function App() {
   const { setUser, setLoading } = useAuthStore();
   const [isInitialized, setIsInitialized] = useState(false);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [isRoleVerified, setIsRoleVerified] = useState(false);
 
   useEffect(() => {
     let mounted = true;
@@ -333,7 +334,9 @@ function App() {
             // Use auth user data directly - no database query needed
             setUser({
               id: session.user.id,
+              email: session.user.email || '',
               role: 'customer', // Default role
+              // Don't set isRoleVerified here - we need to fetch from DB
             });
             fetchUserProfile(session.user.id);
           } else {
@@ -357,7 +360,7 @@ function App() {
     // Profile fetch
     const fetchUserProfile = async (userId: string) => {
       try {
-        console.log('🔍 Fetching user profile in background for:', userId);
+        console.log('🔍 Fetching user profile for:', userId);
         const { data: profile, error } = await supabase
           .from('users')
           .select('role')
@@ -366,8 +369,11 @@ function App() {
 
         if (!error && profile && mounted) {
           console.log('✅ User profile fetched, role:', profile.role);
-          // Update user with correct role
-          setUser(prev => prev ? { ...prev, role: profile.role } : null); 
+          if (profile.role) {
+            // Update user with correct role
+            setUser(prev => prev ? { ...prev, email: prev.email, role: profile.role } : null);
+            setIsRoleVerified(true);
+          }
         }
         // Mark auth as ready regardless of result
         setIsAuthReady(true);
@@ -408,6 +414,7 @@ function App() {
                 id: session.user.id,
                 email: session.user.email || '',
                 role: 'customer',
+                // Don't set isRoleVerified here - we need to fetch from DB
               });
               fetchUserProfile(session.user.id);
             }
@@ -428,7 +435,7 @@ function App() {
   }, [setUser, setLoading, isInitialized]);
 
   // Show minimal loading only for initial auth check
-  if (!isInitialized || !isAuthReady) {
+  if (!isInitialized || (!isAuthReady && user)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
         <div className="text-center">
