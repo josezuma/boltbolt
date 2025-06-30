@@ -117,7 +117,7 @@ export function AdminLayout() {
     return <Navigate to="/login" replace />;
   }
   
-  if (!isAdmin()) {
+  if (user.role !== 'admin') {
     console.log('⛔ AdminLayout: User is not admin, redirecting to home');
     console.log('⛔ Access denied: User is not admin');
     return <Navigate to="/" replace />;
