@@ -186,6 +186,9 @@ export function Checkout() {
     
     // Move to payment step
     setActiveStep('payment');
+    
+    // Automatically initialize payment when moving to payment step
+    handlePayment();
   };
   
   const handleBillingChange = (field: keyof BillingInfo, value: string | boolean) => {
@@ -574,8 +577,18 @@ export function Checkout() {
                           }}
                         />
                       </Elements>
+                    ) : isProcessingPayment ? (
+                      <div className="flex items-center justify-center p-12">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                        <span className="ml-3 text-primary">Initializing payment...</span>
+                      </div>
                     ) : (
-                      <Button onClick={handlePayment} className="w-full">Initialize Payment</Button>
+                      <div className="flex items-center justify-center p-12">
+                        <div className="animate-pulse text-center">
+                          <CreditCard className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                          <p className="text-muted-foreground">Loading payment form...</p>
+                        </div>
+                      </div>
                     )}
                   </CardContent>
                 </Card>
