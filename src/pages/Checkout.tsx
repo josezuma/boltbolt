@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Lock, Truck, CreditCard, ShoppingBag } from 'lucide-react';
-import { Elements } from '@stripe/react-stripe-js';
+import { Elements, StripeElementsOptions } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -55,7 +55,7 @@ export function Checkout() {
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [transactionId, setTransactionId] = useState('');
   const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
-  const [stripeReady, setStripeReady] = useState(false);
+  const [useStripeElements, setUseStripeElements] = useState(true);
   
   // Form state
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
@@ -97,8 +97,16 @@ export function Checkout() {
       try { 
         const stripeInstance = await getStripe();
         setStripePromise(Promise.resolve(stripeInstance));
-        setStripeReady(true);
         console.log('✅ Stripe initialized successfully');
+        
+        // Check if we should use Stripe Elements from settings
+        const { data: settingsData } = await supabase
+          .from('settings')
+          .select('value')
+          .eq('key', 'stripe_elements_enabled')
+          .single();
+          
+        setUseStripeElements(settingsData?.value === true);
       } catch (error: any) {
         console.error('Error initializing Stripe:', error);
         toast.error('Failed to initialize payment system');
@@ -381,7 +389,7 @@ export function Checkout() {
       }
       
       setClientSecret(paymentIntentResult.clientSecret);
-      setPaymentIntentId(paymentIntentResult.paymentIntentId);
+      setPaymentIntentId(paymentIntentResult.paymentIntentId); 
       setTransactionId(paymentIntentResult.transactionId);
 
       // Payment will be handled by Stripe Elements in the StripePaymentForm component
@@ -480,6 +488,23 @@ export function Checkout() {
     }
   };
   
+  // Define Stripe Elements options
+  const stripeElementsOptions: StripeElementsOptions = {
+    clientSecret,
+    appearance: {
+      theme: 'stripe',
+      variables: {
+        colorPrimary: '#2A2A2A',
+        colorBackground: '#ffffff',
+        colorText: '#111111',
+        colorDanger: '#AD2B2F',
+        fontFamily: 'Inter, system-ui, sans-serif',
+        spacingUnit: '4px',
+        borderRadius: '0px',
+      },
+    },
+  };
+  
   // If cart is empty, show message
   if (items.length === 0) {
     return <EmptyCartMessage />;
@@ -540,8 +565,8 @@ export function Checkout() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {clientSecret && stripePromise ? (
-                      <Elements stripe={stripePromise} options={{ clientSecret }}>
+                    {clientSecret && stripePromise && useStripeElements ? (
+                      <Elements stripe={stripePromise} options={stripeElementsOptions}>
                         <StripePaymentForm 
                           billingInfo={billingInfo}
                           handleBillingChange={handleBillingChange}
@@ -560,15 +585,6 @@ export function Checkout() {
                           }}
                         />
                       </Elements>
-                    ) : activeStep === 'payment' && !clientSecret ? (
-                      <PaymentForm 
-                        billingInfo={billingInfo}
-                        handleBillingChange={handleBillingChange}
-                        handlePayment={handlePayment}
-                        isProcessingPayment={isProcessingPayment}
-                        paymentStatus={paymentStatus}
-                        total={total}
-                      />
                     ) : (
                       <PaymentForm 
                         billingInfo={billingInfo}

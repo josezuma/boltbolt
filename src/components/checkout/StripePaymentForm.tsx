@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { 
   PaymentElement, 
+  CardElement,
   useStripe, 
   useElements,
   AddressElement
@@ -158,7 +159,7 @@ export function StripePaymentForm({
       <div className="space-y-4">
         <h3 className="font-medium text-lg">Billing Information</h3>
         
-        <div className="bg-muted p-4 rounded-lg">
+        <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
           <PaymentElement />
         </div>
       </div>
