@@ -94,7 +94,7 @@ export function Checkout() {
   useEffect(() => {
     const initializeStripe = async () => {
       console.log('🔄 Initializing Stripe...');
-      try {
+      try { 
         const stripeInstance = await getStripe();
         setStripePromise(Promise.resolve(stripeInstance));
         setStripeReady(true);
