@@ -38,7 +38,7 @@ export const isStripeTestMode = async () => {
   }
 };
 
-// Initialize Stripe lazily to ensure we have the key
+// Initialize Stripe lazily to ensure we have the key when needed
 export const getStripe = async () => {
   const key = await getStripePublishableKey();
   if (!key) {
@@ -47,7 +47,7 @@ export const getStripe = async () => {
   return loadStripe(key);
 };
 
-// Create payment intent via Supabase Edge Function
+// Create payment intent via Supabase Edge Function with proper error handling
 export const createPaymentIntent = async (
   amount: number, 
   currency: string = 'USD', 
@@ -65,7 +65,7 @@ export const createPaymentIntent = async (
     }
     
     const token = authData.session?.access_token;
-    
+
     if (!token) {
       console.error('❌ No auth token available');
       throw new Error('User not authenticated');
@@ -80,7 +80,7 @@ export const createPaymentIntent = async (
     console.log('🔑 Auth token available:', token ? 'Yes' : 'No');
     
     // Prepare the request payload
-    const payload = {
+    const payload = { 
       amount: parseFloat(amount.toFixed(2)),
       currency: currency.toUpperCase(),
       orderId: orderId,
@@ -88,7 +88,7 @@ export const createPaymentIntent = async (
       paymentMethodType: 'card'  // Explicitly specify card as payment method type
     };
     
-    const response = await fetch(apiUrl, {
+    const response = await fetch(apiUrl, { 
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export const createPaymentIntent = async (
       body: JSON.stringify(payload)
     });
     
-    if (!response.ok) {
+    if (!response.ok) { 
       console.error('❌ Payment intent creation failed:', response.status, response.statusText);
       const errorText = await response.text();
       try {
@@ -110,7 +110,7 @@ export const createPaymentIntent = async (
       }
     }
     
-    const result = await response.json();
+    const result = await response.json(); 
 
     if (!result.clientSecret) {
       console.error('❌ No client secret in response:', result);
@@ -130,7 +130,7 @@ export const createPaymentIntent = async (
   }
 };
 
-// Process payment via Supabase Edge Function
+// Process payment via Supabase Edge Function with improved error handling
 export const processPayment = async (
   paymentIntentId: string,
   transactionId: string | null,
@@ -143,7 +143,7 @@ export const processPayment = async (
       transactionId: transactionId ? transactionId.substring(0, 8) + '...' : 'null',
       orderId: orderId.substring(0, 8) + '...'
     });
-    
+
     const apiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/process-payment`;
 
     const { data: authData, error: authError } = await supabase.auth.getSession();
@@ -152,7 +152,7 @@ export const processPayment = async (
       console.error('❌ Auth error:', authError);
       throw new Error('Authentication error: ' + authError.message);
     }
-    
+
     const token = authData.session?.access_token;
 
     if (!token) {
@@ -160,7 +160,7 @@ export const processPayment = async (
       // Continue without authentication for testing purposes
       console.warn('⚠️ Proceeding without authentication token (for testing)');
     }
-    
+
     console.log('🔄 Preparing to call process-payment edge function...');
 
     const response = await fetch(apiUrl, { 
@@ -174,7 +174,7 @@ export const processPayment = async (
         paymentIntentId,
         transactionId,
         orderId
-      }),
+      }), 
     });
     
     console.log('🔄 Process payment response status:', response.status);
@@ -207,7 +207,7 @@ export const processPayment = async (
       message: result.message || 'No message'
     });
     
-    // If the server says the payment was successful, return success
+    // If the server says the payment was successful, return success result
     if (result.success) {
       return result;
     }

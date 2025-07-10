@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Lock, Truck, CreditCard, ShoppingBag } from 'lucide-react';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -8,13 +10,13 @@ import { useCartStore, useAuthStore } from '@/lib/store';
 import { supabase } from '@/lib/supabase';
 import { getStripe, createPaymentIntent, processPayment } from '@/lib/stripe';
 import { toast } from 'sonner';
-import { loadStripe } from '@stripe/stripe-js';
 import type { Stripe, StripeElements } from '@stripe/stripe-js';
 
 // Import components
 import { ShippingForm } from '@/components/checkout/ShippingForm';
 import { PaymentForm } from '@/components/checkout/PaymentForm';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
+import { StripePaymentForm } from '@/components/checkout/StripePaymentForm';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
 import { EmptyCartMessage } from '@/components/checkout/EmptyCartMessage';
 
@@ -53,8 +55,7 @@ export function Checkout() {
   const [clientSecret, setClientSecret] = useState('');
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [transactionId, setTransactionId] = useState('');
-  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null); 
-  const [stripeElements, setStripeElements] = useState<StripeElements | null>(null);
+  const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
   
   // Form state
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
@@ -92,7 +93,7 @@ export function Checkout() {
   // Initialize Stripe
   useEffect(() => {
     const initializeStripe = async () => {
-      console.log('🔄 Initializing Stripe...');
+      console.log('🔄 Initializing Stripe Elements...');
       try {
         // Get Stripe publishable key from settings
         const { data: stripeKeyData, error: stripeKeyError } = await supabase
@@ -115,8 +116,7 @@ export function Checkout() {
         }
         
         console.log('🔑 Stripe key found:', stripeKey ? 'Yes (hidden)' : 'No');
-        const stripePromise = loadStripe(stripeKey);
-        setStripePromise(stripePromise);
+        setStripePromise(loadStripe(stripeKey));
       } catch (error: any) {
         console.error('Error initializing Stripe:', error);
         toast.error('Failed to initialize payment system');
@@ -347,43 +347,6 @@ export function Checkout() {
   
   const handlePayment = async () => {
     console.log('🔍 handlePayment function called');
-    // Get card details from the form
-    const cardNumberElement = document.getElementById('cardNumber') as HTMLInputElement;
-    const expiryDateElement = document.getElementById('expiryDate') as HTMLInputElement;
-    const cvcElement = document.getElementById('cvc') as HTMLInputElement;
-    
-    if (!cardNumberElement || !expiryDateElement || !cvcElement) {
-      toast.error('Please enter all card details');
-      return;
-    }
-    
-    const cardNumber = cardNumberElement.value;
-    const expiryDate = expiryDateElement.value;
-    const cvc = cvcElement.value;
-    
-    if (!cardNumber || !expiryDate || !cvc) {
-      toast.error('Please complete all card fields');
-      return;
-    }
-    
-    // Extract month and year from expiry date
-    const expiryParts = expiryDate.split('/');
-    if (expiryParts.length !== 2 || !expiryParts[0] || !expiryParts[1]) {
-      toast.error('Invalid expiry date format');
-      return;
-    }
-    
-    const expMonth = parseInt(expiryParts[0], 10);
-    const expYear = parseInt(expiryParts[1], 10) + 2000; // Convert 2-digit year to 4-digit
-    
-    console.log('🔍 Starting Stripe payment process...');
-    
-    // Log card details (masked for security)
-    console.log('💳 Card details:', {
-      cardNumber: cardNumber ? `${cardNumber.substring(0, 4)}...${cardNumber.slice(-4)}` : 'missing',
-      expiryDate: expiryDate || 'missing',
-      cvc: cvc ? '***' : 'missing'
-    });
     
     if (!stripePromise) {
       console.error('❌ Stripe not initialized');
@@ -406,15 +369,8 @@ export function Checkout() {
       
       setOrderId(order.id);
       
-      // Step 1: Create payment intent
-      console.log('Creating payment intent:', { 
-        amount: total,
-        currency: 'USD', 
-        orderId: order.id, 
-        userId: user?.id || '' 
-      });
-      
-      console.log('Creating payment intent with details:', { 
+      // Create payment intent
+      console.log('Creating payment intent with details:', {
         amount: total, 
         currency: 'USD', 
         orderId: order.id, 
@@ -440,10 +396,6 @@ export function Checkout() {
       
       console.log('✅ Payment intent created successfully:', paymentIntentResult);
       
-      // Log the client secret (first few chars only for security)
-      console.log('🔑 Client secret received:', paymentIntentResult.clientSecret ? 
-        `${paymentIntentResult.clientSecret.substring(0, 10)}...` : 'MISSING');
-      
       if (!paymentIntentResult || !paymentIntentResult.clientSecret) {
         console.error('❌ No client secret returned from payment intent creation');
         toast.error('Failed to initialize payment');
@@ -456,139 +408,7 @@ export function Checkout() {
       setPaymentIntentId(paymentIntentResult.paymentIntentId);
       setTransactionId(paymentIntentResult.transactionId);
       
-      // Step 2: Load Stripe and confirm payment
-      try {
-        console.log('🔄 Loading Stripe instance...');
-        const stripe = await stripePromise;
-        
-        if (!stripe) {
-          console.error('❌ Failed to load Stripe');
-          toast.error('Payment system unavailable');
-          setIsProcessingPayment(false);
-          setPaymentStatus('failed');
-          return;
-        }
-        
-        // Step 3: Confirm the payment with Stripe
-        console.log('💳 About to call stripe.confirmCardPayment with client secret:', 
-          paymentIntentResult.clientSecret ? 'Present (hidden)' : 'Missing');
-        
-        console.log('📋 Payment confirmation parameters:', {
-          cardNumber: `${cardNumber.substring(0, 4)}...${cardNumber.slice(-4)}`,
-          expMonth,
-          expYear,
-          billingName: `${billingInfo.firstName} ${billingInfo.lastName}`,
-          billingCity: billingInfo.city,
-          billingCountry: billingInfo.country
-        });
-        
-        console.log('🚀 Calling stripe.confirmCardPayment()...');
-        const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
-          paymentIntentResult.clientSecret,
-          {
-            payment_method: {
-              card: {
-                number: cardNumber.replace(/\s+/g, ''),
-                exp_month: expMonth,
-                exp_year: expYear,
-                cvc: cvc,
-              },
-              billing_details: {
-                name: `${billingInfo.firstName} ${billingInfo.lastName}`,
-                address: {
-                  line1: billingInfo.address,
-                  city: billingInfo.city,
-                  state: billingInfo.state,
-                  postal_code: billingInfo.zipCode,
-                  country: billingInfo.country,
-                },
-              },
-            },
-          },
-        );
-        
-        console.log('✅ stripe.confirmCardPayment() completed');
-        console.log('💰 Payment intent result:', {
-          id: paymentIntent?.id,
-          status: paymentIntent?.status,
-          amount: paymentIntent?.amount,
-          clientSecret: paymentIntent?.client_secret ? 'Present (hidden)' : 'Missing',
-          errorMessage: confirmError?.message || 'None'
-        });
-        
-        if (confirmError) {
-          console.error('❌ Payment confirmation error:', confirmError);
-          console.error('❌ Error details:', {
-            type: confirmError.type,
-            code: confirmError.code,
-            message: confirmError.message,
-            decline_code: confirmError.decline_code,
-            param: confirmError.param
-          });
-          toast.error(`Payment failed: ${confirmError.message || 'Unknown error'}`);
-          setIsProcessingPayment(false);
-          setPaymentStatus('failed');
-          return;
-        }
-        
-        console.log('✅ Payment confirmed with status:', paymentIntent?.status || 'unknown');
-        
-        // Immediately update UI to show success after Stripe confirmation
-        if (paymentIntent && ['succeeded', 'processing', 'requires_capture'].includes(paymentIntent.status)) {
-          setPaymentStatus('succeeded');
-          toast.success('Payment successful!');
-          clearCart();
-          
-          // Redirect to order confirmation
-          setTimeout(() => {
-            navigate(`/order-confirmation/${orderId}`);
-          }, 1500);
-          return;
-        }
-        
-        // Verify payment with server
-        try {
-          console.log('🔍 Calling verifyPaymentWithServer with:', {
-            paymentIntentId: paymentIntentResult.paymentIntentId?.substring(0, 8) + '...' || 'missing',
-            transactionId: paymentIntentResult.transactionId?.substring(0, 8) + '...' || 'null',
-            orderId: order.id.substring(0, 8) + '...'
-          });
-          
-          const verificationResult = await verifyPaymentWithServer(
-            paymentIntentResult.paymentIntentId || '',
-            paymentIntentResult.transactionId || null,
-            order.id || ''
-          );
-          
-          console.log('Payment verification result:', verificationResult);
-          
-          console.log('✅ Server verification completed successfully');
-          
-          // If we get here, the server verification was successful
-          setPaymentStatus('succeeded');
-          toast.success('Payment verified successfully!');
-          clearCart();
-          
-          // Redirect to order confirmation
-          setTimeout(() => {
-            console.log('🔄 Redirecting to order confirmation page');
-            navigate(`/order-confirmation/${orderId}`);
-          }, 1000);
-        } catch (error) {
-          console.error('❌ Error verifying payment:', error);
-          setPaymentStatus('failed');
-          toast.error('Payment verification failed. Please try again or contact support.');
-          
-          console.log('❌ Not redirecting due to verification failure');
-          
-          // Don't clear cart so user can try again
-        }
-      } catch (error: any) {
-        console.error('❌ Error during payment confirmation:', error);
-        toast.error('Payment processing failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
-        setIsProcessingPayment(false);
-        setPaymentStatus('failed');
-      }
+      // Payment will be handled by Stripe Elements in the StripePaymentForm component
     } catch (error: any) {
       console.error('❌ Payment error:', error);
       toast.error('Payment processing failed');
@@ -599,7 +419,7 @@ export function Checkout() {
   
   const verifyPaymentWithServer = async (
     paymentIntentId: string,
-    transactionId: string | null = null,
+    transactionId: string | null,
     orderId: string
   ) => {
     console.log('🔍 Verifying payment with server...');
@@ -744,14 +564,36 @@ export function Checkout() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <PaymentForm 
-                      billingInfo={billingInfo}
-                      handleBillingChange={handleBillingChange}
-                      handlePayment={handlePayment}
-                      isProcessingPayment={isProcessingPayment}
-                      paymentStatus={paymentStatus}
-                      total={total}
-                    />
+                    {clientSecret ? (
+                      <Elements stripe={stripePromise} options={{ clientSecret }}>
+                        <StripePaymentForm 
+                          billingInfo={billingInfo}
+                          handleBillingChange={handleBillingChange}
+                          isProcessingPayment={isProcessingPayment}
+                          paymentStatus={paymentStatus}
+                          total={total}
+                          orderId={orderId}
+                          paymentIntentId={paymentIntentId}
+                          transactionId={transactionId}
+                          onPaymentSuccess={() => {
+                            setPaymentStatus('succeeded');
+                            clearCart();
+                            setTimeout(() => {
+                              navigate(`/order-confirmation/${orderId}`);
+                            }, 1500);
+                          }}
+                        />
+                      </Elements>
+                    ) : (
+                      <PaymentForm 
+                        billingInfo={billingInfo}
+                        handleBillingChange={handleBillingChange}
+                        handlePayment={handlePayment}
+                        isProcessingPayment={isProcessingPayment}
+                        paymentStatus={paymentStatus}
+                        total={total}
+                      />
+                    )}
                   </CardContent>
                 </Card>
                 
