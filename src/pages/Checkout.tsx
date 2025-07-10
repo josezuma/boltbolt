@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Lock, Truck, CreditCard, ShoppingBag } from 'lucide-react';
-import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -56,6 +55,7 @@ export function Checkout() {
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [transactionId, setTransactionId] = useState('');
   const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
+  const [stripeReady, setStripeReady] = useState(false);
   
   // Form state
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
@@ -93,30 +93,12 @@ export function Checkout() {
   // Initialize Stripe
   useEffect(() => {
     const initializeStripe = async () => {
-      console.log('🔄 Initializing Stripe Elements...');
+      console.log('🔄 Initializing Stripe...');
       try {
-        // Get Stripe publishable key from settings
-        const { data: stripeKeyData, error: stripeKeyError } = await supabase
-          .from('settings')
-          .select('value')
-          .eq('key', 'stripe_publishable_key')
-          .single();
-        
-        if (stripeKeyError) {
-          console.error('Error fetching Stripe key:', stripeKeyError);
-          toast.error('Failed to initialize payment system');
-          return;
-        }
-        
-        const stripeKey = stripeKeyData?.value?.toString();
-        if (!stripeKey) {
-          console.error('❌ Stripe key not found in settings');
-          toast.error('Payment system not properly configured');
-          return;
-        }
-        
-        console.log('🔑 Stripe key found:', stripeKey ? 'Yes (hidden)' : 'No');
-        setStripePromise(loadStripe(stripeKey));
+        const stripeInstance = await getStripe();
+        setStripePromise(Promise.resolve(stripeInstance));
+        setStripeReady(true);
+        console.log('✅ Stripe initialized successfully');
       } catch (error: any) {
         console.error('Error initializing Stripe:', error);
         toast.error('Failed to initialize payment system');
@@ -347,13 +329,7 @@ export function Checkout() {
   
   const handlePayment = async () => {
     console.log('🔍 handlePayment function called');
-    
-    if (!stripePromise) {
-      console.error('❌ Stripe not initialized');
-      toast.error('Payment system not initialized');
-      return;
-    }
-    
+
     setIsProcessingPayment(true);
     setPaymentStatus('processing');
     
@@ -369,7 +345,7 @@ export function Checkout() {
       
       setOrderId(order.id);
       
-      // Create payment intent
+      // Create payment intent for Stripe
       console.log('Creating payment intent with details:', {
         amount: total, 
         currency: 'USD', 
@@ -407,7 +383,7 @@ export function Checkout() {
       setClientSecret(paymentIntentResult.clientSecret);
       setPaymentIntentId(paymentIntentResult.paymentIntentId);
       setTransactionId(paymentIntentResult.transactionId);
-      
+
       // Payment will be handled by Stripe Elements in the StripePaymentForm component
     } catch (error: any) {
       console.error('❌ Payment error:', error);
@@ -564,7 +540,7 @@ export function Checkout() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {clientSecret ? (
+                    {clientSecret && stripePromise ? (
                       <Elements stripe={stripePromise} options={{ clientSecret }}>
                         <StripePaymentForm 
                           billingInfo={billingInfo}
@@ -584,6 +560,15 @@ export function Checkout() {
                           }}
                         />
                       </Elements>
+                    ) : activeStep === 'payment' && !clientSecret ? (
+                      <PaymentForm 
+                        billingInfo={billingInfo}
+                        handleBillingChange={handleBillingChange}
+                        handlePayment={handlePayment}
+                        isProcessingPayment={isProcessingPayment}
+                        paymentStatus={paymentStatus}
+                        total={total}
+                      />
                     ) : (
                       <PaymentForm 
                         billingInfo={billingInfo}
@@ -591,6 +576,37 @@ export function Checkout() {
                         handlePayment={handlePayment}
                         isProcessingPayment={isProcessingPayment}
                         paymentStatus={paymentStatus}
+                        total={total}
+                      />
+                    )}
+                  </CardContent>
+                </Card>
+                
+                <div className="flex justify-between">
+                  <Button variant="outline" onClick={() => setActiveStep('shipping')}>
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to Shipping
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+          
+          {/* Order Summary */}
+          <div>
+            <OrderSummary 
+              items={items}
+              subtotal={subtotal}
+              shipping={shipping}
+              tax={tax}
+              total={total}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
                         total={total}
                       />
                     )}

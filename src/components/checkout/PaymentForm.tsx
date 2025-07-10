@@ -1,7 +1,7 @@
 import { CreditCard, Lock, Shield, AlertCircle, CheckCircle, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Label } from '@/components/ui/label'; 
 import { BillingForm } from './BillingForm';
 import { useState, useEffect } from 'react';
 
@@ -45,7 +45,7 @@ export function PaymentForm({
   const [validation, setValidation] = useState<CardValidation>({
     number: null,
     expiry: null,
-    cvc: null
+    cvc: null 
   });
 
   // Validate all fields when component mounts
@@ -54,7 +54,7 @@ export function PaymentForm({
     if (cardNumber === '4242 4242 4242 4242') {
       setValidation(prev => ({
         ...prev,
-        number: true
+        number: true 
       }));
     }
   }, []);
@@ -62,7 +62,7 @@ export function PaymentForm({
   // Format card number with spaces
   const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-    const matches = v.match(/\d{4,16}/g);
+    const matches = v.match(/\d{4,16}/g); 
     const match = matches && matches[0] || '';
     const parts = [];
     
@@ -79,7 +79,7 @@ export function PaymentForm({
 
   // Format expiry date with slash
   const formatExpiryDate = (value: string) => {
-    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+    const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, ''); 
     
     if (v.length >= 3) {
       return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
@@ -91,7 +91,7 @@ export function PaymentForm({
   // Validate card number using Luhn algorithm
   const validateCardNumber = (number: string) => {
     // Remove spaces and non-digits
-    const cardNumber = number.replace(/\D/g, '');
+    const cardNumber = number.replace(/\D/g, ''); 
     
     // Check length (most cards are 13-19 digits)
     if (cardNumber.length < 13 || cardNumber.length > 19) {
@@ -121,7 +121,7 @@ export function PaymentForm({
   // Validate expiry date
   const validateExpiryDate = (expiry: string) => {
     // Check format
-    if (!expiry || expiry.length < 5) {
+    if (!expiry || expiry.length < 5) { 
       return null;
     }
     
@@ -129,7 +129,7 @@ export function PaymentForm({
       return false;
     }
     
-    const [month, year] = expiry.split('/');
+    const [month, year] = expiry.split('/'); 
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear() % 100; // Get last 2 digits
     const currentMonth = currentDate.getMonth() + 1; // 1-12
@@ -137,7 +137,7 @@ export function PaymentForm({
     const expiryMonth = parseInt(month, 10);
     const expiryYear = parseInt(year, 10);
     
-    // Check if month is valid
+    // Check if month is valid 
     if (expiryMonth < 1 || expiryMonth > 12) {
       return false;
     }
@@ -145,7 +145,7 @@ export function PaymentForm({
     // Handle 2-digit year (add 2000)
     const fullExpiryYear = 2000 + expiryYear;
     
-    // Check if date is in the past
+    // Check if date is in the past 
     const now = new Date();
     const currentFullYear = now.getFullYear();
     
@@ -159,7 +159,7 @@ export function PaymentForm({
 
   // Validate CVC
   const validateCVC = (cvc: string) => {
-    // Most cards have 3-4 digit CVC
+    // Most cards have 3-4 digit CVC 
     return /^\d{3,4}$/.test(cvc.trim());
   };
 
@@ -167,7 +167,7 @@ export function PaymentForm({
   const handleCardNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatCardNumber(e.target.value);
     setCardNumber(formattedValue);
-    
+     
     // Only validate if there's input
     if (formattedValue.length > 0) {
       setValidation(prev => ({
@@ -186,7 +186,7 @@ export function PaymentForm({
   const handleExpiryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formattedValue = formatExpiryDate(e.target.value);
     const limitedValue = formattedValue.substring(0, 5); // Limit to MM/YY format
-    setExpiryDate(limitedValue);
+    setExpiryDate(limitedValue); 
     
     // Only validate if we have a complete MM/YY format
     if (limitedValue.length === 5) {
@@ -205,7 +205,7 @@ export function PaymentForm({
   // Handle CVC input
   const handleCvcChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '').substring(0, 4);
-    setCvc(value.trim());
+    setCvc(value.trim()); 
     
     // Validate only if there's input
     if (value.length > 0) {
@@ -225,7 +225,7 @@ export function PaymentForm({
   const isFormValid = () => {
     return (
       (validation.number === true || cardNumber === '4242 4242 4242 4242') && 
-      (validation.expiry === true || (expiryDate.length === 5 && validateExpiryDate(expiryDate))) && 
+      (validation.expiry === true || (expiryDate.length === 5 && validateExpiryDate(expiryDate))) &&  
       (validation.cvc === true || (cvc.length >= 3 && cvc.length <= 4)));
   };
 
@@ -233,7 +233,7 @@ export function PaymentForm({
     <div className="space-y-6">
       {/* Billing Address */}
       <BillingForm 
-        billingInfo={billingInfo}
+        billingInfo={billingInfo} 
         handleBillingChange={handleBillingChange}
         isProcessingPayment={isProcessingPayment}
       />
@@ -241,7 +241,7 @@ export function PaymentForm({
       {/* Credit Card Information */}
       <div className="space-y-4 pt-4 border-t">
         <h3 className="font-medium text-lg">Card Information</h3>
-        
+         
         <div className="space-y-2">
           <Label htmlFor="cardNumber">Card Number *</Label>
           <div className="relative">
@@ -249,7 +249,7 @@ export function PaymentForm({
               <Input
                 id="cardNumber"
                 placeholder="1234 5678 9012 3456"
-                value={cardNumber}
+                value={cardNumber} 
                 onChange={handleCardNumberChange}
                 maxLength={19}
                 className="pl-10"
@@ -257,7 +257,7 @@ export function PaymentForm({
               />
               {validation.number !== null && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  {validation.number ? (
+                  {validation.number ? ( 
                     <Check className="w-4 h-4 text-green-500" />
                   ) : (
                     <X className="w-4 h-4 text-red-500" />
@@ -265,7 +265,7 @@ export function PaymentForm({
                 </div>
               )}
             </div>
-            <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+            <CreditCard className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" /> 
           </div>
           {validation.number === false && (
             <p className="text-xs text-red-500">
@@ -273,7 +273,7 @@ export function PaymentForm({
             </p>
           )}
           {cardNumber.length === 0 && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground"> 
               For testing, use card number: 4242 4242 4242 4242
             </p>
           )}
@@ -281,7 +281,7 @@ export function PaymentForm({
         
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="expiryDate">Expiry Date *</Label>
+            <Label htmlFor="expiryDate">Expiry Date *</Label> 
             <div className="relative">
               <Input
                 id="expiryDate"
@@ -293,7 +293,7 @@ export function PaymentForm({
               />
               {validation.expiry !== null && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  {validation.expiry ? (
+                  {validation.expiry ? ( 
                     <Check className="w-4 h-4 text-green-500" />
                   ) : (
                     <X className="w-4 h-4 text-red-500" />
@@ -301,7 +301,7 @@ export function PaymentForm({
                 </div>
               )}
             </div>
-            {validation.expiry === false && expiryDate.length > 0 && (
+            {validation.expiry === false && expiryDate.length > 0 && ( 
               <p className="text-xs text-red-500">
                 Please enter a valid expiry date (MM/YY)
                 <br />
@@ -309,7 +309,7 @@ export function PaymentForm({
               </p>
             )}
               {expiryDate.length === 0 && (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground"> 
                   For testing, use any future date (e.g., 12/25)
                 </p>
               )}
@@ -317,7 +317,7 @@ export function PaymentForm({
           <div className="space-y-2">
             <Label htmlFor="cvc">CVC *</Label>
             <div className="relative">
-              <Input
+              <Input 
                 id="cvc"
                 placeholder="123"
                 value={cvc}
@@ -327,7 +327,7 @@ export function PaymentForm({
               />
               {validation.cvc !== null && (
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  {validation.cvc ? (
+                  {validation.cvc ? ( 
                     <Check className="w-4 h-4 text-green-500" />
                   ) : (
                     <X className="w-4 h-4 text-red-500" />
@@ -335,12 +335,12 @@ export function PaymentForm({
                 </div>
               )}
             </div>
-            {validation.cvc === false && (
+            {validation.cvc === false && ( 
               <p className="text-xs text-red-500">
                 Please enter a valid CVC (3-4 digits)
               </p>
             )}
-            {cvc.length === 0 && (
+            {cvc.length === 0 && ( 
               <p className="text-xs text-muted-foreground">
                 For testing, use any 3 digits (e.g., 123)
               </p>
@@ -349,7 +349,7 @@ export function PaymentForm({
         </div>
       </div>
       
-      {/* Payment Status */}
+      {/* Payment Status Message */}
       {paymentStatus !== 'idle' && (
         <div className={`p-4 rounded-lg ${
           paymentStatus === 'processing' ? 'bg-blue-50 text-blue-700' :
@@ -357,7 +357,7 @@ export function PaymentForm({
           'bg-red-50 text-red-700'
         }`}>
           <div className="flex items-center">
-            {paymentStatus === 'processing' && (
+            {paymentStatus === 'processing' && ( 
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
                 <p>Processing your payment...</p>
@@ -370,7 +370,7 @@ export function PaymentForm({
               </>
             )}
             {paymentStatus === 'failed' && (
-              <>
+              <> 
                 <AlertCircle className="w-4 h-4 mr-2" />
                 <p>Payment failed. Please try again.</p>
               </>
@@ -378,7 +378,7 @@ export function PaymentForm({
           </div>
         </div>
       )}
-      
+       
       <div className="pt-4">
         <Button 
           onClick={handlePayment} 
@@ -386,7 +386,7 @@ export function PaymentForm({
           className="w-full"
         >
           {isProcessingPayment ? (
-            <>
+            <> 
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2"></div>
               Processing...
             </>
@@ -398,7 +398,7 @@ export function PaymentForm({
           )}
         </Button>
       </div>
-      
+       
       <div className="flex items-center justify-center space-x-4 text-xs text-muted-foreground pt-4">
         <div className="flex items-center">
           <Lock className="w-3 h-3 mr-1" />
@@ -410,5 +410,5 @@ export function PaymentForm({
         </div>
       </div>
     </div>
-  );
+  ); 
 }
