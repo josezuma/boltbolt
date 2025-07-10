@@ -13,7 +13,6 @@ import type { Stripe, StripeElements } from '@stripe/stripe-js';
 
 // Import components
 import { ShippingForm } from '@/components/checkout/ShippingForm';
-import { PaymentForm } from '@/components/checkout/PaymentForm';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
 import { StripePaymentForm } from '@/components/checkout/StripePaymentForm';
 import { CheckoutSteps } from '@/components/checkout/CheckoutSteps';
@@ -55,7 +54,6 @@ export function Checkout() {
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [transactionId, setTransactionId] = useState('');
   const [stripePromise, setStripePromise] = useState<Promise<Stripe | null> | null>(null);
-  const [useStripeElements, setUseStripeElements] = useState(true);
   
   // Form state
   const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
@@ -93,20 +91,11 @@ export function Checkout() {
   // Initialize Stripe
   useEffect(() => {
     const initializeStripe = async () => {
-      console.log('🔄 Initializing Stripe...');
+      console.log('🔄 Initializing Stripe...'); 
       try { 
         const stripeInstance = await getStripe();
         setStripePromise(Promise.resolve(stripeInstance));
         console.log('✅ Stripe initialized successfully');
-        
-        // Check if we should use Stripe Elements from settings
-        const { data: settingsData } = await supabase
-          .from('settings')
-          .select('value')
-          .eq('key', 'stripe_elements_enabled')
-          .single();
-          
-        setUseStripeElements(settingsData?.value === true);
       } catch (error: any) {
         console.error('Error initializing Stripe:', error);
         toast.error('Failed to initialize payment system');
@@ -565,7 +554,7 @@ export function Checkout() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    {clientSecret && stripePromise && useStripeElements ? (
+                    {clientSecret && stripePromise ? (
                       <Elements stripe={stripePromise} options={stripeElementsOptions}>
                         <StripePaymentForm 
                           billingInfo={billingInfo}
@@ -586,14 +575,7 @@ export function Checkout() {
                         />
                       </Elements>
                     ) : (
-                      <PaymentForm 
-                        billingInfo={billingInfo}
-                        handleBillingChange={handleBillingChange}
-                        handlePayment={handlePayment}
-                        isProcessingPayment={isProcessingPayment}
-                        paymentStatus={paymentStatus}
-                        total={total}
-                      />
+                      <Button onClick={handlePayment} className="w-full">Initialize Payment</Button>
                     )}
                   </CardContent>
                 </Card>

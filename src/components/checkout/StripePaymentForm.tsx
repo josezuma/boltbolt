@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react';
 import { 
   PaymentElement, 
-  CardElement,
   useStripe, 
-  useElements,
-  AddressElement
+  useElements
 } from '@stripe/react-stripe-js';
 import { Lock, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { processPayment } from '@/lib/stripe';
+import { BillingForm } from './BillingForm';
 
 interface BillingInfo {
   sameAsShipping: boolean;
@@ -156,8 +154,15 @@ export function StripePaymentForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Billing Address */}
-      <div className="space-y-4">
-        <h3 className="font-medium text-lg">Billing Information</h3>
+      <BillingForm 
+        billingInfo={billingInfo}
+        handleBillingChange={handleBillingChange}
+        isProcessingPayment={isProcessingPayment}
+      />
+      
+      {/* Stripe Elements */}
+      <div className="space-y-4 pt-4 border-t">
+        <h3 className="font-medium text-lg">Card Information</h3>
         
         <div className="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
           <PaymentElement />
