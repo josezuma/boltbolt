@@ -126,7 +126,8 @@ export function StripePaymentForm({
           
           console.log('Payment verification result:', verificationResult);
           
-          if (verificationResult.success) {
+          // Don't log the full verification result which might contain sensitive data
+          if (verificationResult && verificationResult.success) {
             setMessage("Payment successful!");
             toast.success("Payment successful!");
             onPaymentSuccess();

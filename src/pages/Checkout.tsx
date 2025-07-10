@@ -401,7 +401,7 @@ export function Checkout() {
     console.log('🔍 Verifying payment with server...');
     console.log('Payment details:', {
       paymentIntentId: paymentIntentId.substring(0, 8) + '...',
-      transactionId: transactionId ? transactionId.substring(0, 8) + '...' : 'null',
+      transactionId: '[REDACTED]',
       orderId: orderId.substring(0, 8) + '...'
     });
     
