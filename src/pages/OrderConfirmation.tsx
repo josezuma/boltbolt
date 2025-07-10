@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle, Package, Truck, Mail, ArrowRight, ShoppingBag, Calendar, CreditCard, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { supabase } from '@/lib/supabase';
