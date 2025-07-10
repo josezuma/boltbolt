@@ -12,7 +12,7 @@ export const getStripePublishableKey = async () => {
     
     if (error) throw error;
     
-    // Return the value or a fallback test key
+    // Return the value (only returning publishable key, not secret key)
     return data?.value?.toString() || '';
   } catch (error) {
     console.error('Error fetching Stripe publishable key:', error);
@@ -120,7 +120,7 @@ export const createPaymentIntent = async (
     console.log('✅ Payment intent creation result:', {
       clientSecret: result.clientSecret ? 'Present (hidden)' : 'MISSING',
       paymentIntentId: result.paymentIntentId ? result.paymentIntentId.substring(0, 8) + '...' : 'missing',
-      transactionId: result.transactionId ? result.transactionId.substring(0, 8) + '...' : 'missing'
+      transactionId: result.transactionId ? '[REDACTED]' : 'missing'
     });
     
     return result;

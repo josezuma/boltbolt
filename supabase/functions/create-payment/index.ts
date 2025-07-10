@@ -102,7 +102,8 @@ serve(async (req) => {
       throw new Error("Stripe secret key not found in database");
     }
     
-    logDebug(`Using Stripe secret key: ${stripeSecretKey.substring(0, 7)}...`);
+    // Don't log any part of the secret key, even partially
+    logDebug(`Using Stripe secret key: [REDACTED]`);
 
     const stripe = new Stripe(stripeSecretKey, {
       apiVersion: "2023-10-16",
