@@ -607,34 +607,3 @@ export function Checkout() {
     </div>
   );
 }
-                        total={total}
-                      />
-                    )}
-                  </CardContent>
-                </Card>
-                
-                <div className="flex justify-between">
-                  <Button variant="outline" onClick={() => setActiveStep('shipping')}>
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back to Shipping
-                  </Button>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
-          
-          {/* Order Summary */}
-          <div>
-            <OrderSummary 
-              items={items}
-              subtotal={subtotal}
-              shipping={shipping}
-              tax={tax}
-              total={total}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
