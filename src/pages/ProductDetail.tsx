@@ -401,7 +401,7 @@ export function ProductDetail() {
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="custom-container py-6 sm:py-8">
+      <div className="container-editorial py-6 sm:py-8">
         {/* Enhanced Breadcrumb */}
         <nav className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 mb-6 sm:mb-8 bg-white p-3 sm:p-4 shadow-sm overflow-x-auto">
           <Link to="/" className="hover:text-blue-600 transition-colors font-medium">Home</Link>
@@ -428,10 +428,10 @@ export function ProductDetail() {
         </Button>
 
         {/* Enhanced Product Details */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-12 sm:mb-16 max-w-6xl mx-auto">
           {/* Enhanced Product Images */}
           <div className="space-y-4 sm:space-y-6">
-            <div className="aspect-square overflow-hidden bg-white shadow-xl">
+            <div className="aspect-square overflow-hidden bg-white shadow-lg">
               <img
                 src={productImages[selectedImage]}
                 alt={product.name}
@@ -460,7 +460,7 @@ export function ProductDetail() {
           </div>
 
           {/* Enhanced Product Info */}
-          <div className="space-y-6 sm:space-y-8">
+          <div className="space-y-4 sm:space-y-6">
             <div>
               {/* Brand */}
               {product.brands && (
@@ -486,7 +486,7 @@ export function ProductDetail() {
               )}
               
               <h1 className="text-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl mb-3 sm:mb-4 leading-tight">{product.name}</h1>
-              
+
               <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-6 mb-4 sm:mb-6">
                 <div className="flex items-center space-x-1">
                     {reviewCount > 0 ? (
@@ -519,7 +519,7 @@ export function ProductDetail() {
               </div>
               
               {product.description && (
-                <p className="text-gray-600 leading-relaxed text-base sm:text-lg mb-4 sm:mb-6">{product.description}</p>
+                <p className="text-gray-600 leading-relaxed text-base mb-4 sm:mb-6">{product.description}</p>
               )}
               
               {/* Product Details */}
@@ -549,8 +549,8 @@ export function ProductDetail() {
             </div>
 
             {/* Enhanced Stock Status */}
-            <Card className="border-0 shadow-lg bg-gradient-to-r from-green-50 to-blue-50 rounded-none">
-              <CardContent className="p-4 sm:p-6">
+            <Card className="border-0 shadow-md bg-gradient-to-r from-green-50 to-blue-50 rounded-none">
+              <CardContent className="p-3 sm:p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                   <div className="flex items-center space-x-3">
                     {product.stock > 0 ? (
@@ -576,7 +576,7 @@ export function ProductDetail() {
             </Card>
 
             {/* Enhanced Quantity and Add to Cart */}
-            <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-6">
                 <label className="text-base sm:text-lg font-semibold text-gray-700">Quantity:</label>
                 <div className="flex items-center border-2 border-gray-200 rounded-xl overflow-hidden">
@@ -596,15 +596,15 @@ export function ProductDetail() {
                   </button>
                 </div>
               </div>
-
+              
               <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                 <Button
                   onClick={handleAddToCart}
                   disabled={product.stock === 0}
-                  className="btn-gradient flex-1 h-12 sm:h-14 text-base sm:text-lg shadow-xl"
+                  className="btn-gradient flex-1 h-10 sm:h-12 text-base shadow-lg"
                   size="lg"
                 >
-                  <ShoppingCart className="w-5 h-5 sm:w-6 sm:h-6 mr-2 sm:mr-3" />
+                  <ShoppingCart className="w-5 h-5 mr-2" />
                   Add to Cart
                 </Button>
                 <Button 
@@ -612,60 +612,60 @@ export function ProductDetail() {
                   size="lg" 
                   onClick={() => handleWishlistToggle()}
                   disabled={wishlistLoading}
-                  className={`h-12 sm:h-14 px-4 sm:px-6 border-2 transition-colors ${
+                  className={`h-10 sm:h-12 px-4 border-2 transition-colors ${
                     isInWishlist 
                       ? 'bg-red-50 border-red-200 text-red-600 hover:bg-red-100' 
                       : 'hover:bg-red-50 hover:border-red-200'
                   }`}
                 >
-                  <Heart className={`w-5 h-5 sm:w-6 sm:h-6 ${isInWishlist ? 'fill-current' : ''}`} />
+                  <Heart className={`w-5 h-5 ${isInWishlist ? 'fill-current' : ''}`} />
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg" 
                   onClick={handleShare}
-                  className="h-12 sm:h-14 px-4 sm:px-6 border-2 hover:bg-blue-50 hover:border-blue-200"
+                  className="h-10 sm:h-12 px-4 border-2 hover:bg-blue-50 hover:border-blue-200"
                 >
-                  <Share2 className="w-5 h-5 sm:w-6 sm:h-6" />
+                  <Share2 className="w-5 h-5" />
                 </Button>
               </div>
             </div>
 
             {/* Enhanced Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 pt-6 sm:pt-8 border-t-2 border-gray-100">
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-blue-50 hover:bg-blue-100 transition-colors">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 flex items-center justify-center shadow-lg flex-shrink-0">
-                  <Truck className="w-6 h-6 text-white" />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-4 sm:pt-6 border-t border-gray-100">
+              <div className="flex items-center space-x-3 p-3 bg-blue-50 hover:bg-blue-100 transition-colors">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-500 flex items-center justify-center shadow-md flex-shrink-0">
+                  <Truck className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900 text-sm sm:text-base">Free Shipping</p>
+                  <p className="font-bold text-gray-900 text-xs sm:text-sm">Free Shipping</p>
                   <p className="text-xs sm:text-sm text-gray-600">On orders over $50</p>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-green-50 hover:bg-green-100 transition-colors">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 flex items-center justify-center shadow-lg flex-shrink-0">
-                  <Shield className="w-6 h-6 text-white" />
+              <div className="flex items-center space-x-3 p-3 bg-green-50 hover:bg-green-100 transition-colors">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-green-500 flex items-center justify-center shadow-md flex-shrink-0">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900 text-sm sm:text-base">Secure Payment</p>
+                  <p className="font-bold text-gray-900 text-xs sm:text-sm">Secure Payment</p>
                   <p className="text-xs sm:text-sm text-gray-600">SSL encrypted</p>
                 </div>
               </div>
               
-              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-orange-50 hover:bg-orange-100 transition-colors">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 flex items-center justify-center shadow-lg flex-shrink-0">
-                  <RotateCcw className="w-6 h-6 text-white" />
+              <div className="flex items-center space-x-3 p-3 bg-orange-50 hover:bg-orange-100 transition-colors">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-500 flex items-center justify-center shadow-md flex-shrink-0">
+                  <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900 text-sm sm:text-base">Easy Returns</p>
+                  <p className="font-bold text-gray-900 text-xs sm:text-sm">Easy Returns</p>
                   <p className="text-xs sm:text-sm text-gray-600">30-day policy</p>
                 </div>
               </div>
             </div>
 
             {/* Trust Indicators */}
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-8 pt-4 sm:pt-6 border-t border-gray-100">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pt-3 sm:pt-4 border-t border-gray-100">
               <div className="flex items-center space-x-2 text-gray-600">
                 <Check className="w-5 h-5 text-green-500" />
                 <span className="text-xs sm:text-sm font-medium">Verified Product</span>
@@ -679,28 +679,28 @@ export function ProductDetail() {
         </div>
 
         {/* Enhanced Product Tabs */}
-        <Card className="border-0 shadow-xl rounded-none">
-          <CardContent className="p-4 sm:p-6 lg:p-8">
+        <Card className="border-0 shadow-lg rounded-none max-w-6xl mx-auto">
+          <CardContent className="p-4 sm:p-6">
             <Tabs defaultValue="description" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 h-12 sm:h-14 bg-gray-100 p-1 rounded-none">
-                <TabsTrigger value="description" className="text-sm sm:text-lg font-medium rounded-none">Description</TabsTrigger>
-                <TabsTrigger value="reviews" className="text-sm sm:text-lg font-medium rounded-none">Reviews</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 h-10 sm:h-12 bg-gray-100 p-1 rounded-none">
+                <TabsTrigger value="description" className="text-sm font-medium rounded-none">Description</TabsTrigger>
+                <TabsTrigger value="reviews" className="text-sm font-medium rounded-none">Reviews</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="description" className="mt-6 sm:mt-8">
+              <TabsContent value="description" className="mt-4 sm:mt-6">
                 <div className="prose max-w-none">
-                  <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Product Description</h3>
-                  <p className="text-gray-600 leading-relaxed text-base sm:text-lg">
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-3">Product Description</h3>
+                  <p className="text-gray-600 leading-relaxed text-sm sm:text-base">
                     {product.description || 'This premium product offers exceptional quality and performance. Crafted with attention to detail and built to last, it represents the perfect blend of functionality and style. Whether for personal use or as a gift, this item exceeds expectations and delivers outstanding value.'}
                   </p>
                   
-                  <div className="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                    <div className="bg-blue-50 p-4 sm:p-6">
-                      <h4 className="font-bold text-gray-900 mb-2 sm:mb-3 flex items-center text-sm sm:text-base">
-                        <Award className="w-5 h-5 mr-2 text-blue-600" />
+                  <div className="mt-4 sm:mt-6 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                    <div className="bg-blue-50 p-3 sm:p-4">
+                      <h4 className="font-bold text-gray-900 mb-2 flex items-center text-xs sm:text-sm">
+                        <Award className="w-4 h-4 mr-2 text-blue-600" />
                         Premium Features
                       </h4>
-                      <ul className="space-y-1 sm:space-y-2 text-gray-600 text-sm sm:text-base">
+                      <ul className="space-y-1 text-gray-600 text-xs sm:text-sm">
                         <li>• High-quality materials</li>
                         <li>• Durable construction</li>
                         <li>• Modern design</li>
@@ -708,12 +708,12 @@ export function ProductDetail() {
                       </ul>
                     </div>
                     
-                    <div className="bg-green-50 p-4 sm:p-6">
-                      <h4 className="font-bold text-gray-900 mb-2 sm:mb-3 flex items-center text-sm sm:text-base">
-                        <Clock className="w-5 h-5 mr-2 text-green-600" />
+                    <div className="bg-green-50 p-3 sm:p-4">
+                      <h4 className="font-bold text-gray-900 mb-2 flex items-center text-xs sm:text-sm">
+                        <Clock className="w-4 h-4 mr-2 text-green-600" />
                         What's Included
                       </h4>
-                      <ul className="space-y-1 sm:space-y-2 text-gray-600 text-sm sm:text-base">
+                      <ul className="space-y-1 text-gray-600 text-xs sm:text-sm">
                         <li>• Main product</li>
                         <li>• User manual</li>
                         <li>• Warranty card</li>
@@ -724,12 +724,12 @@ export function ProductDetail() {
                 </div>
               </TabsContent>
               
-              <TabsContent value="reviews" className="mt-6 sm:mt-8">
+              <TabsContent value="reviews" className="mt-4 sm:mt-6">
                 <div className="space-y-8">
                   {/* Reviews Header */}
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div>
-                      <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Customer Reviews</h3>
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">Customer Reviews</h3>
                       <div className="flex items-center">
                         <div className="flex items-center mr-3">
                           {[...Array(5)].map((_, i) => (
@@ -769,7 +769,7 @@ export function ProductDetail() {
                   
                   {/* Review Form */}
                   {reviewFormVisible && user && (
-                    <Card className="border-2 border-blue-100 bg-blue-50">
+                    <Card className="border border-blue-100 bg-blue-50">
                       <CardContent className="pt-6">
                         <form onSubmit={handleSubmitReview} className="space-y-4">
                           <div>
@@ -849,10 +849,10 @@ export function ProductDetail() {
                   {/* Reviews List */}
                   <div className="space-y-6">
                     {productReviews.length === 0 ? (
-                      <div className="text-center py-12 border border-dashed rounded-lg">
-                        <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                        <h4 className="text-lg font-medium text-gray-900 mb-2">No Reviews Yet</h4>
-                        <p className="text-gray-600 mb-6">Be the first to review this product</p>
+                      <div className="text-center py-8 border border-dashed rounded-lg">
+                        <MessageSquare className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                        <h4 className="text-base font-medium text-gray-900 mb-2">No Reviews Yet</h4>
+                        <p className="text-gray-600 mb-4 text-sm">Be the first to review this product</p>
                         {user && !userHasReviewed && (
                           <Button 
                             onClick={() => setReviewFormVisible(true)}
@@ -871,15 +871,15 @@ export function ProductDetail() {
                       </div>
                     ) : (
                       productReviews.map((review) => (
-                        <div key={review.id} className="border rounded-lg p-6 bg-white">
+                        <div key={review.id} className="border rounded-lg p-4 bg-white">
                           <div className="flex justify-between mb-3">
                             <div className="flex items-center">
-                              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3">
                                 {review.users?.email.charAt(0).toUpperCase() || 'U'}
                               </div>
                               <div>
-                                <p className="font-medium">{review.users?.email || 'Anonymous'}</p>
-                                <p className="text-sm text-gray-500">
+                                <p className="font-medium text-sm">{review.users?.email || 'Anonymous'}</p>
+                                <p className="text-xs text-gray-500">
                                   {new Date(review.created_at).toLocaleDateString()}
                                 </p>
                               </div>
@@ -895,7 +895,7 @@ export function ProductDetail() {
                           </div>
                           
                           <h4 className="text-lg font-semibold mb-2">{review.title}</h4>
-                          <p className="text-gray-700 mb-4">{review.comment}</p>
+                          <p className="text-gray-700 text-sm mb-3">{review.comment}</p>
                           
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-4">
@@ -908,11 +908,11 @@ export function ProductDetail() {
                             </div>
                             <div className="flex items-center space-x-2">
                               <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
-                                <ThumbsUp className="w-4 h-4 mr-1" />
+                                <ThumbsUp className="w-3 h-3 mr-1" />
                                 Helpful
                               </Button>
                               <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-700">
-                                <Flag className="w-4 h-4 mr-1" />
+                                <Flag className="w-3 h-3 mr-1" />
                                 Report
                               </Button>
                             </div>
